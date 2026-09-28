@@ -15,7 +15,7 @@ class DatabaseManager:
     con eventuali componenti del sistema non ancora totalmente migrati.
     """
 
-    def __init__(self, min_size: int = 1, max_size: int = 10):
+    def __init__(self, min_size: int = 1, max_size: int = 10, connection_timeout: int = 3):
         # Costruzione della stringa di connessione per SQLAlchemy con psycopg (v3)
         user = HEALT_PACS_CONFIG.get_database_user()
         password = HEALT_PACS_CONFIG.get_database_password()
@@ -26,6 +26,7 @@ class DatabaseManager:
         self.db_url = f"postgresql+psycopg://{user}:{password}@{host}:{port}/{dbname}"
         self.min_size = min_size
         self.max_size = max_size
+        self.connection_timeout = connection_timeout
 
         self.engine = None
         self.SessionFactory = None
@@ -40,6 +41,10 @@ class DatabaseManager:
                 pool_timeout=30,
                 pool_recycle=1800,
                 pool_pre_ping=True,
+                # Timeout di rete a livello di driver PostgreSQL (in secondi)
+                connect_args={
+                    "connect_timeout": self.connection_timeout
+                },
             )
 
             # Factory per generare le sessioni ORM con gestione transazionale esplicta

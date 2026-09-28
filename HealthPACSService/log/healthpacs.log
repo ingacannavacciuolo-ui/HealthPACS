@@ -2176,3 +2176,208 @@ ValueError: Configurazione SCP (dicom_scp) vuota o non trovata nel database.
 2026-09-28 19:34:21,614 [INFO] HealthPACS - Rilevato CTRL+C. Avvio procedura di chiusura pulita...
 2026-09-28 19:34:21,616 [INFO] HealthPACS - Arresto del Server DICOM...
 2026-09-28 19:34:21,616 [INFO] HealthPACS - Arresto del DICOM Server...
+2026-09-28 22:07:45,578 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:08:34,038 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:09:35,219 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:12:27,486 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:12:49,563 [ERROR] HealthPACS - DatabaseManager: Errore durante l'inizializzazione dell'Engine DB: (psycopg.errors.ConnectionTimeout) connection timeout expired
+Multiple connection attempts failed. All failures were:
+- host: 'localhost', port: 5434, hostaddr: '::1': connection timeout expired
+- host: 'localhost', port: 5434, hostaddr: '127.0.0.1': connection timeout expired
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+2026-09-28 22:12:56,785 [ERROR] HealthPACS - Impossibile connettersi al database. Arresto dell'applicazione.
+2026-09-28 22:13:00,139 [INFO] HealthPACS - Chiusura del Pool di Connessioni DB...
+2026-09-28 22:13:00,484 [INFO] HealthPACS - DatabaseManager: Engine e pool di connessioni dismessi.
+2026-09-28 22:13:00,847 [INFO] HealthPACS - Applicazione chiusa correttamente.
+2026-09-28 22:14:33,356 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:14:51,297 [ERROR] HealthPACS - DatabaseManager: Errore durante l'inizializzazione dell'Engine DB: (psycopg.errors.ConnectionTimeout) connection timeout expired
+Multiple connection attempts failed. All failures were:
+- host: 'localhost', port: 5434, hostaddr: '::1': connection timeout expired
+- host: 'localhost', port: 5434, hostaddr: '127.0.0.1': connection timeout expired
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+2026-09-28 22:14:52,218 [ERROR] HealthPACS - Impossibile connettersi al database. Arresto dell'applicazione.
+2026-09-28 22:14:52,219 [INFO] HealthPACS - Chiusura del Pool di Connessioni DB...
+2026-09-28 22:14:52,221 [INFO] HealthPACS - DatabaseManager: Engine e pool di connessioni dismessi.
+2026-09-28 22:14:52,221 [INFO] HealthPACS - Applicazione chiusa correttamente.
+2026-09-28 22:15:01,441 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:15:07,113 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 22:15:08,069 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-28 22:15:08,072 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-28 22:15:08,102 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-28 22:15:08,110 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-28 22:15:08,114 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-28 22:15:08,129 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-28 22:15:08,144 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-28 22:15:08,150 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-28 22:15:08,152 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-28 22:15:08,159 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-28 22:15:08,162 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-28 22:15:09,130 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-28 22:15:09,179 [CRITICAL] HealthPACS - DicomServer: Errore fatale durante l'inizializzazione: Impossibile creare/verificare la cartella di archiviazione 'H:ArchiveRoot': [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+Traceback (most recent call last):
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] Impossibile trovare il percorso specificato: 'H:ArchiveRoot'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 100, in _init_storage_units
+    target_dir.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 726, in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 42, in __init__
+    self._init_storage_units()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 105, in _init_storage_units
+    raise OSError(f"Impossibile creare/verificare la cartella di archiviazione '{target_dir}': {e}")
+OSError: Impossibile creare/verificare la cartella di archiviazione 'H:ArchiveRoot': [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+2026-09-28 22:15:09,192 [ERROR] HealthPACS - Errore durante l'avvio del DICOM Server: Impossibile creare/verificare la cartella di archiviazione 'H:ArchiveRoot': [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+Traceback (most recent call last):
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] Impossibile trovare il percorso specificato: 'H:ArchiveRoot'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 100, in _init_storage_units
+    target_dir.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 726, in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\HealthPACS\HealthPACSService\HealthPACS.py", line 16, in start_dicom_server
+    dicom_server = DicomServer(
+        dbmanager= dbmanager,
+        repos=repos
+    )
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 66, in __init__
+    raise e
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 42, in __init__
+    self._init_storage_units()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 105, in _init_storage_units
+    raise OSError(f"Impossibile creare/verificare la cartella di archiviazione '{target_dir}': {e}")
+OSError: Impossibile creare/verificare la cartella di archiviazione 'H:ArchiveRoot': [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+2026-09-28 22:15:09,193 [ERROR] HealthPACS - Errore critico all'avvio di HealthPACS: Impossibile creare/verificare la cartella di archiviazione 'H:ArchiveRoot': [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+Traceback (most recent call last):
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] Impossibile trovare il percorso specificato: 'H:ArchiveRoot'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 100, in _init_storage_units
+    target_dir.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 726, in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Antonio\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Projects\HealthPACS\HealthPACSService\HealthPACS.py", line 48, in main
+    dicom_server = start_dicom_server(dbmanager, repos)
+  File "D:\Projects\HealthPACS\HealthPACSService\HealthPACS.py", line 28, in start_dicom_server
+    raise e
+  File "D:\Projects\HealthPACS\HealthPACSService\HealthPACS.py", line 16, in start_dicom_server
+    dicom_server = DicomServer(
+        dbmanager= dbmanager,
+        repos=repos
+    )
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 66, in __init__
+    raise e
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 42, in __init__
+    self._init_storage_units()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Projects\HealthPACS\HealthPACSService\library\dicom\dicomserver.py", line 105, in _init_storage_units
+    raise OSError(f"Impossibile creare/verificare la cartella di archiviazione '{target_dir}': {e}")
+OSError: Impossibile creare/verificare la cartella di archiviazione 'H:ArchiveRoot': [WinError 3] Impossibile trovare il percorso specificato: 'H:'
+2026-09-28 22:15:09,195 [INFO] HealthPACS - Chiusura del Pool di Connessioni DB...
+2026-09-28 22:15:09,196 [INFO] HealthPACS - DatabaseManager: Engine e pool di connessioni dismessi.
+2026-09-28 22:15:09,196 [INFO] HealthPACS - Applicazione chiusa correttamente.
+2026-09-28 22:15:44,379 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 22:15:47,208 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 22:15:47,223 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-28 22:15:47,224 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-28 22:15:47,235 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-28 22:15:47,240 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-28 22:15:47,241 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-28 22:15:47,247 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-28 22:15:47,253 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-28 22:15:47,256 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-28 22:15:47,257 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-28 22:15:47,260 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-28 22:15:47,262 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-28 22:15:47,262 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-28 22:15:47,306 [INFO] HealthPACS - DicomServer: Creata nuova cartella di archiviazione: D:ArchiveRoot
+2026-09-28 22:15:47,307 [INFO] HealthPACS - Avvio DICOM Server 'HEALTHPACS' su 0.0.0.0:104...
+2026-09-28 22:15:47,310 [INFO] HealthPACS - DICOM Server 'HEALTHPACS' pronto e in ascolto su porta 104.
+2026-09-28 22:15:47,310 [INFO] HealthPACS - HealthPACS avviato con successo. In attesa di connessioni...
+2026-09-28 22:47:24,566 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 22:47:24,629 [WARNING] HealthPACS - AuthService: Password errata per l'utente: 'admin'
+2026-09-28 22:48:53,366 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 22:50:23,074 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:01:13,233 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:01:44,662 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: name 'AppPermissionsModel' is not defined
+2026-09-28 23:01:44,663 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: name 'AppPermissionsModel' is not defined
+2026-09-28 23:01:52,963 [INFO] HealthPACS - AuthService: Login eseguito con successo. Utente: 'admin' (ID: 1)
+2026-09-28 23:02:12,776 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,777 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,779 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,779 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,781 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,781 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,782 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: name 'AppPermissionsModel' is not defined
+2026-09-28 23:02:12,782 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: name 'AppPermissionsModel' is not defined
+2026-09-28 23:04:29,106 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:04:50,330 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: type object 'AppUsersPermissionsModel' has no attribute 'is_granted'
+2026-09-28 23:04:50,331 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: type object 'AppUsersPermissionsModel' has no attribute 'is_granted'
+2026-09-28 23:07:14,412 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:07:53,851 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: type object 'AppUsersPermissionsModel' has no attribute 'is_granted'
+2026-09-28 23:07:53,852 [ERROR] HealthPACS - AppUsersRepo: Errore calcolo permessi effettivi per utente ID 1: type object 'AppUsersPermissionsModel' has no attribute 'is_granted'
+2026-09-28 23:13:01,865 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:13:38,296 [INFO] HealthPACS - AuthService: Login eseguito con successo. Utente: 'admin' (ID: 1)
+2026-09-28 23:20:33,416 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:20:44,613 [INFO] HealthPACS - AuthService: Login eseguito con successo. Utente: 'admin' (ID: 1)
+2026-09-28 23:21:14,476 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:21:14,543 [ERROR] HealthPACS - DatabaseManager: Errore durante la transazione ORM: (psycopg.errors.UndefinedColumn) la colonna app_users_roles.can_delete_studies non esiste
+LINE 1: ...s_roles.name, public.app_users_roles.description, public.app...
+                                                             ^
+[SQL: SELECT public.app_users_roles.id, public.app_users_roles.name, public.app_users_roles.description, public.app_users_roles.can_delete_studies 
+FROM public.app_users_roles 
+WHERE public.app_users_roles.name = %(name_1)s::VARCHAR]
+[parameters: {'name_1': 'RADIOLOGIST'}]
+(Background on this error at: https://sqlalche.me/e/21/f405)
+2026-09-28 23:22:37,066 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:23:58,028 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:24:50,210 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 23:24:59,501 [INFO] HealthPACS - AuthService: Login eseguito con successo. Utente: 'user' (ID: 3)

@@ -1,12 +1,13 @@
 # library/repository/app_users_repo.py
 
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Set
 from sqlalchemy import select, update, delete
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
 from library.models.app_users_model import AppUsersModel
 from library.models.app_users_roles_model import AppUsersRolesModel
-
+from library.models.app_users_roles_permissions_model import AppUsersRolesPermissionsModel
+from library.models.app_users_permissions_model import AppUsersPermissionsModel
 
 class AppUsersRepo:
     """Repository ORM per la gestione degli utenti nella tabella public.app_users."""
@@ -115,3 +116,37 @@ class AppUsersRepo:
         except Exception as e:
             logger.error(f"AppUsersRepo: Errore creazione utente '{username}': {e}")
             return None
+        
+    def get_effective_permission_codes(self, user_id: int) -> Set[str]:
+        """Recupera l'insieme dei codici di permesso associati al ruolo dell'utente.
+
+        Esegue la JOIN tra:
+        - public.app_users (per identificare il ruolo dell'utente)
+        - public.app_users_roles_permissions (tabella ponte ruolo-permessi)
+        - public.app_users_permissions (anagrafica dei permessi)
+        """
+        try:
+            with self.db.get_session() as session:
+                stmt = (
+                    select(AppUsersPermissionsModel.code)
+                    .join(
+                        AppUsersRolesPermissionsModel,
+                        AppUsersPermissionsModel.id
+                        == AppUsersRolesPermissionsModel.permission_id,
+                    )
+                    .join(
+                        AppUsersModel,
+                        AppUsersModel.users_roles_id
+                        == AppUsersRolesPermissionsModel.role_id,
+                    )
+                    .where(AppUsersModel.id == user_id)
+                )
+                
+                permissions = session.execute(stmt).scalars().all()
+                return set(permissions)
+                
+        except Exception as e:
+            logger.error(
+                f"AppUsersRepo: Errore recupero permessi per utente ID {user_id}: {e}"
+            )
+            return set()
