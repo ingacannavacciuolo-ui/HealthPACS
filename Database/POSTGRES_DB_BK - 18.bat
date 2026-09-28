@@ -6,10 +6,10 @@ SET PGPASSWORD=postgres
 SET db_name=HEALTH_PACS
 SET file_format=c
 SET host_name=localhost
-SET port_number=5434
+SET port_number=5432
 SET user_name=postgres
 SET pg_dump_path=C:\PROGRA~1\PostgreSQL\18\bin\pg_dump.exe
-SET target_backup_path=E:\Progetti\Python\HealthPACS\Database\
+SET target_backup_path=D:\Projects\HealthPACS\Database\
 SET other_pg_dump_flags=--blobs --verbose -c 
 
 REM Fetch Current System Date and set month,day and year variables
