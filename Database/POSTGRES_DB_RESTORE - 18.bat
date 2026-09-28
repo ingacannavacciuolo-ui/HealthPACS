@@ -9,9 +9,9 @@ SET options= -v --no-owner
 SET host_name=localhost
 SET user_name=postgres
 SET port_number=5434
-SET db_name=ROUTING_MOVE_PRETMEDICA
-SET target_dump_path=E:\Progetti\Python\RoutingQueryRetrive\DBDump\
-SET dump_file_name=ROUTING_MOVE_202609041035.dump
+SET db_name=HEALTH_PACS
+SET target_dump_path=D:\Projects\HealthPACS\Database\
+SET dump_file_name=HEALTH_PACS_202609282003.dump
 
 REM :> Executing command restore database
 REM :createdb -h localhost -p 5432 -U postgres testdb
