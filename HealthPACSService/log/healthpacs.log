@@ -2154,3 +2154,25 @@ ValueError: Configurazione SCP (dicom_scp) vuota o non trovata nel database.
 2026-09-28 16:14:01,484 [INFO] HealthPACS - [ASSOC] Connessione accettata da: PACS1 [127.0.0.1]
 2026-09-28 16:14:10,972 [INFO] HealthPACS - [C-ECHO] Ricevuta richiesta di Verification da AET: PACS1 (127.0.0.1)
 2026-09-28 16:14:13,894 [INFO] HealthPACS - [ASSOC] Connessione rilasciata da: PACS1
+2026-09-28 19:33:29,447 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-28 19:33:29,686 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-28 19:33:29,697 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-28 19:33:29,700 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-28 19:33:29,710 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-28 19:33:29,713 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-28 19:33:29,714 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-28 19:33:29,721 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-28 19:33:29,727 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-28 19:33:29,732 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-28 19:33:29,733 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-28 19:33:29,737 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-28 19:33:29,738 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-28 19:33:29,738 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-28 19:33:29,760 [INFO] HealthPACS - DicomServer: Cartella di archiviazione esistente verificata: H:ArchiveRoot
+2026-09-28 19:33:29,760 [INFO] HealthPACS - DicomServer: Cartella di archiviazione esistente verificata: G:ArchiveRoot
+2026-09-28 19:33:29,761 [INFO] HealthPACS - Avvio DICOM Server 'HEALTHPACS' su 0.0.0.0:104...
+2026-09-28 19:33:29,762 [INFO] HealthPACS - DICOM Server 'HEALTHPACS' pronto e in ascolto su porta 104.
+2026-09-28 19:33:29,762 [INFO] HealthPACS - HealthPACS avviato con successo. In attesa di connessioni...
+2026-09-28 19:34:21,614 [INFO] HealthPACS - Rilevato CTRL+C. Avvio procedura di chiusura pulita...
+2026-09-28 19:34:21,616 [INFO] HealthPACS - Arresto del Server DICOM...
+2026-09-28 19:34:21,616 [INFO] HealthPACS - Arresto del DICOM Server...
