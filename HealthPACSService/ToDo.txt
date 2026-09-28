@@ -1,0 +1,17 @@
+1. Gestione configurazione disco di archiviazione. Deve esserci una tabella dove si inserisco i dischi su cui archiviare, in modo
+   tale da rendere il sistema multi disco. La tabella deve prevedere:
+   - Unità disco: Lettera dell'unità su cui archiviare    
+   - Abilitato: se il disco è abilitato per scrittura
+   - Percentuale spazio archiviazione: percentuale spazio oltre la quale il disco non deve archiviare e passa passa a disabilitato
+   - Percentuale alert:  percentuale spazio oltre la quale vien comunciato un alert di disco in riempimento.
+
+2. Completare la gestione ORM per tutte le tabelle.
+
+   
+3. Gestione dello storage dicom da parte di un nodo configurato.
+   Nella fase di storage vengono effettuate le seguenti operazioni:
+      1. Controllare se gli OID che arrivano sono permessi con quella SOP Class e Transfer Syntax
+      2. Prelevare le informazioni dalla connessione e scrivere nel database secondo il criterio: STUDIO/SERIE/ISTANZA,
+         con una modalità fast.
+      3. Trovare l'archivio a minor dimensione in cui salvare lo STUDIO   
+
