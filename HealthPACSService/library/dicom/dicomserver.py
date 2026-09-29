@@ -53,7 +53,7 @@ class DicomServer:
             # Mappatura Handler Eventi
             self.handlers = [
                 (evt.EVT_C_ECHO, handle_echo, [self.repos]),
-                (evt.EVT_C_STORE, handle_storage, [self.repos]),
+                (evt.EVT_C_STORE, handle_storage, [self]),
                 (evt.EVT_REQUESTED, handle_association_requested, [self.repos]),
                 (evt.EVT_ACCEPTED, handle_association_accepted, [self.repos]),
                 (evt.EVT_RELEASED, handle_association_released, [self.repos]),

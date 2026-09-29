@@ -2381,3 +2381,146 @@ WHERE public.app_users_roles.name = %(name_1)s::VARCHAR]
 2026-09-28 23:23:58,028 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
 2026-09-28 23:24:50,210 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
 2026-09-28 23:24:59,501 [INFO] HealthPACS - AuthService: Login eseguito con successo. Utente: 'user' (ID: 3)
+2026-09-29 22:26:00,986 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-29 22:26:01,371 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 22:26:01,381 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppPermissionsRepo' come 'repos.apppermissionsrepo'
+2026-09-29 22:26:01,391 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-29 22:26:01,393 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesPermissionsRepo' come 'repos.appusersrolespermissionsrepo'
+2026-09-29 22:26:01,394 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-29 22:26:01,399 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersSessionsRepo' come 'repos.appuserssessionsrepo'
+2026-09-29 22:26:01,410 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-29 22:26:01,415 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-29 22:26:01,416 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-29 22:26:01,421 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-29 22:26:01,429 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-29 22:26:01,431 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-29 22:26:01,432 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-29 22:26:01,435 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-29 22:26:01,436 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-29 22:26:01,436 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-29 22:26:01,481 [INFO] HealthPACS - DicomServer: Creata nuova cartella di archiviazione: D:ArchiveRoot
+2026-09-29 22:26:01,481 [INFO] HealthPACS - Avvio DICOM Server 'HEALTHPACS' su 0.0.0.0:104...
+2026-09-29 22:26:01,485 [INFO] HealthPACS - DICOM Server 'HEALTHPACS' pronto e in ascolto su porta 104.
+2026-09-29 22:26:01,485 [INFO] HealthPACS - HealthPACS avviato con successo. In attesa di connessioni...
+2026-09-29 22:26:06,507 [INFO] HealthPACS - Rilevato CTRL+C. Avvio procedura di chiusura pulita...
+2026-09-29 22:26:06,508 [INFO] HealthPACS - Arresto del Server DICOM...
+2026-09-29 22:26:06,508 [INFO] HealthPACS - Arresto del DICOM Server...
+2026-09-29 22:26:06,571 [INFO] HealthPACS - DICOM Server arrestato con successo.
+2026-09-29 22:26:06,572 [INFO] HealthPACS - Chiusura del Pool di Connessioni DB...
+2026-09-29 22:26:06,574 [INFO] HealthPACS - DatabaseManager: Engine e pool di connessioni dismessi.
+2026-09-29 22:26:06,574 [INFO] HealthPACS - Applicazione chiusa correttamente.
+2026-09-29 22:33:33,021 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 22:34:14,697 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 22:34:36,262 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 22:35:28,421 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 22:40:18,730 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 22:40:48,517 [INFO] HealthPACS - AuthService: Login eseguito con successo. Utente: 'user' (ID: 3)
+2026-09-29 23:22:03,536 [INFO] HealthPACS - Avvio del server FastAPI/Uvicorn in background per i test...
+2026-09-29 23:22:05,575 [INFO] HealthPACS - === INIZIO TEST REST API ===
+2026-09-29 23:22:07,603 [ERROR] HealthPACS - Errore durante l'esecuzione del test: HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: / (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] Impossibile stabilire la connessione. Rifiuto persistente del computer di destinazione"))
+2026-09-29 23:22:07,604 [INFO] HealthPACS - Terminazione del server di test.
+2026-09-29 23:23:11,270 [INFO] HealthPACS - Avvio del server FastAPI/Uvicorn in background per i test...
+2026-09-29 23:23:14,280 [ERROR] HealthPACS - Uvicorn si è interrotto subito. Controlla gli errori sopra.
+2026-09-29 23:23:14,281 [INFO] HealthPACS - Terminazione del server di test.
+2026-09-29 23:31:19,848 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-29 23:31:20,011 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 23:31:20,013 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppPermissionsRepo' come 'repos.apppermissionsrepo'
+2026-09-29 23:31:20,013 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-29 23:31:20,014 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesPermissionsRepo' come 'repos.appusersrolespermissionsrepo'
+2026-09-29 23:31:20,014 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-29 23:31:20,015 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersSessionsRepo' come 'repos.appuserssessionsrepo'
+2026-09-29 23:31:20,024 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-29 23:31:20,029 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-29 23:31:20,030 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-29 23:31:20,030 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-29 23:31:20,037 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-29 23:31:20,040 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-29 23:31:20,041 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-29 23:31:20,044 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-29 23:31:20,045 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-29 23:31:20,046 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-29 23:31:20,090 [INFO] HealthPACS - DicomServer: Cartella di archiviazione esistente verificata: D:ArchiveRoot
+2026-09-29 23:31:20,091 [INFO] HealthPACS - Avvio DICOM Server 'HEALTHPACS' su 0.0.0.0:104...
+2026-09-29 23:31:20,093 [INFO] HealthPACS - DICOM Server 'HEALTHPACS' pronto e in ascolto su porta 104.
+2026-09-29 23:31:20,095 [INFO] HealthPACS - API Server (REST/WebSocket) avviato su http://127.0.0.1:8000
+2026-09-29 23:31:20,095 [INFO] HealthPACS - HealthPACS avviato con successo. In attesa di connessioni...
+2026-09-29 23:33:37,810 [INFO] HealthPACS - Avvio del server FastAPI/Uvicorn in background per i test...
+2026-09-29 23:33:40,815 [ERROR] HealthPACS - Uvicorn si è interrotto subito. Controlla gli errori sopra.
+2026-09-29 23:33:40,816 [INFO] HealthPACS - Terminazione del server di test.
+2026-09-29 23:33:54,474 [INFO] HealthPACS - Avvio del server FastAPI/Uvicorn in background per i test...
+2026-09-29 23:33:57,484 [ERROR] HealthPACS - Uvicorn si è interrotto subito. Controlla gli errori sopra.
+2026-09-29 23:33:57,485 [INFO] HealthPACS - Terminazione del server di test.
+2026-09-29 23:34:07,395 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-29 23:34:07,556 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 23:34:07,558 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppPermissionsRepo' come 'repos.apppermissionsrepo'
+2026-09-29 23:34:07,558 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-29 23:34:07,559 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesPermissionsRepo' come 'repos.appusersrolespermissionsrepo'
+2026-09-29 23:34:07,559 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-29 23:34:07,560 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersSessionsRepo' come 'repos.appuserssessionsrepo'
+2026-09-29 23:34:07,569 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-29 23:34:07,573 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-29 23:34:07,575 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-29 23:34:07,575 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-29 23:34:07,581 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-29 23:34:07,584 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-29 23:34:07,586 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-29 23:34:07,589 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-29 23:34:07,590 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-29 23:34:07,590 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-29 23:34:07,634 [INFO] HealthPACS - DicomServer: Cartella di archiviazione esistente verificata: D:ArchiveRoot
+2026-09-29 23:34:07,635 [INFO] HealthPACS - Avvio DICOM Server 'HEALTHPACS' su 0.0.0.0:104...
+2026-09-29 23:34:07,637 [INFO] HealthPACS - DICOM Server 'HEALTHPACS' pronto e in ascolto su porta 104.
+2026-09-29 23:34:07,639 [INFO] HealthPACS - API Server (REST/WebSocket) avviato su http://127.0.0.1:8000
+2026-09-29 23:34:07,639 [INFO] HealthPACS - HealthPACS avviato con successo. In attesa di connessioni...
+2026-09-29 23:34:27,025 [INFO] HealthPACS - Avvio del server FastAPI/Uvicorn in background per i test...
+2026-09-29 23:34:30,031 [ERROR] HealthPACS - Uvicorn si è interrotto subito. Controlla gli errori sopra.
+2026-09-29 23:34:30,031 [INFO] HealthPACS - Terminazione del server di test.
+2026-09-29 23:36:36,680 [INFO] HealthPACS - Avvio del server FastAPI/Uvicorn in background per i test...
+2026-09-29 23:36:39,686 [ERROR] HealthPACS - Uvicorn si è interrotto subito. Controlla gli errori sopra.
+2026-09-29 23:36:39,686 [INFO] HealthPACS - Terminazione del server di test.
+2026-09-29 23:36:45,055 [INFO] HealthPACS - === INIZIO TEST REST API ===
+2026-09-29 23:36:45,100 [INFO] HealthPACS - REST Health Check [200]: {'status': 'online', 'system': 'HealthPACS Backend'}
+2026-09-29 23:36:45,104 [INFO] HealthPACS - REST Get Study ID 1 [422]: {'detail': [{'type': 'missing', 'loc': ['query', 'db_manager'], 'msg': 'Field required', 'input': None}]}
+2026-09-29 23:36:45,107 [INFO] HealthPACS - REST Senza Token [422]: {'detail': [{'type': 'missing', 'loc': ['header', 'authorization'], 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ['query', 'db_manager'], 'msg': 'Field required', 'input': None}]}
+2026-09-29 23:36:45,107 [INFO] HealthPACS - === INIZIO TEST WEBSOCKET API ===
+2026-09-29 23:36:45,128 [ERROR] HealthPACS - Errore durante l'esecuzione dei test: server rejected WebSocket connection: HTTP 403
+2026-09-29 23:47:06,381 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-29 23:47:06,542 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-29 23:47:06,544 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppPermissionsRepo' come 'repos.apppermissionsrepo'
+2026-09-29 23:47:06,544 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-29 23:47:06,545 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesPermissionsRepo' come 'repos.appusersrolespermissionsrepo'
+2026-09-29 23:47:06,545 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-29 23:47:06,546 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersSessionsRepo' come 'repos.appuserssessionsrepo'
+2026-09-29 23:47:06,555 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-29 23:47:06,559 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-29 23:47:06,560 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-29 23:47:06,561 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'
+2026-09-29 23:47:06,567 [INFO] HealthPACS - RepositoryContainer: Caricato 'ScuSopTransferSyntaxRepo' come 'repos.scusoptransfersyntaxrepo'
+2026-09-29 23:47:06,570 [INFO] HealthPACS - RepositoryContainer: Caricato 'SessioniWebRepo' come 'repos.sessioniwebrepo'
+2026-09-29 23:47:06,571 [INFO] HealthPACS - RepositoryContainer: Caricato 'SopClassUidRepo' come 'repos.sopclassuidrepo'
+2026-09-29 23:47:06,575 [INFO] HealthPACS - RepositoryContainer: Caricato 'StorageUnitsRepo' come 'repos.storageunitsrepo'
+2026-09-29 23:47:06,576 [INFO] HealthPACS - RepositoryContainer: Caricato 'TransferSyntaxUidRepo' come 'repos.transfersyntaxuidrepo'
+2026-09-29 23:47:06,576 [INFO] HealthPACS - Avvio Server HealthPACS...
+2026-09-29 23:47:06,622 [INFO] HealthPACS - DicomServer: Cartella di archiviazione esistente verificata: D:ArchiveRoot
+2026-09-29 23:47:06,623 [INFO] HealthPACS - Avvio DICOM Server 'HEALTHPACS' su 0.0.0.0:104...
+2026-09-29 23:47:06,625 [INFO] HealthPACS - DICOM Server 'HEALTHPACS' pronto e in ascolto su porta 104.
+2026-09-29 23:47:06,627 [INFO] HealthPACS - API Server (REST/WebSocket) avviato su http://127.0.0.1:8000
+2026-09-29 23:47:06,627 [INFO] HealthPACS - HealthPACS avviato con successo. In attesa di connessioni...
+2026-09-29 23:47:15,641 [INFO] HealthPACS - === INIZIO TEST REST API ===
+2026-09-29 23:47:15,681 [INFO] HealthPACS - REST Health Check [200]: {'status': 'online', 'system': 'HealthPACS Backend'}
+2026-09-29 23:47:15,690 [WARNING] HealthPACS - DicomStudiesService: Accesso negato 'study:read' per token test_ses...
+2026-09-29 23:47:15,691 [INFO] HealthPACS - REST Get Study ID 1 [403]: {'detail': "Accesso Negato: Permesso 'study:read' mancante."}
+2026-09-29 23:47:15,695 [INFO] HealthPACS - REST Senza Token [422]: {'detail': [{'type': 'missing', 'loc': ['header', 'authorization'], 'msg': 'Field required', 'input': None}]}
+2026-09-29 23:47:15,695 [INFO] HealthPACS - === INIZIO TEST WEBSOCKET API ===
+2026-09-29 23:47:15,715 [ERROR] HealthPACS - Errore durante l'esecuzione dei test: server rejected WebSocket connection: HTTP 403
+2026-09-30 00:09:46,776 [INFO] HealthPACS - Avvio di HealthPACS...
+2026-09-30 00:09:46,940 [INFO] HealthPACS - DatabaseManager: Engine ORM e Pool di connessioni inizializzati con successo.
+2026-09-30 00:09:57,200 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppPermissionsRepo' come 'repos.apppermissionsrepo'
+2026-09-30 00:10:01,933 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRepo' come 'repos.appusersrepo'
+2026-09-30 00:10:06,845 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesPermissionsRepo' come 'repos.appusersrolespermissionsrepo'
+2026-09-30 00:10:16,221 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersRolesRepo' come 'repos.appusersrolesrepo'
+2026-09-30 00:10:17,365 [INFO] HealthPACS - RepositoryContainer: Caricato 'AppUsersSessionsRepo' come 'repos.appuserssessionsrepo'
+2026-09-30 00:10:18,653 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomEquipmentRepo' come 'repos.dicomequipmentrepo'
+2026-09-30 00:10:19,948 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomScpRepo' come 'repos.dicomscprepo'
+2026-09-30 00:10:21,181 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomSCURepo' come 'repos.dicomscurepo'
+2026-09-30 00:10:22,251 [INFO] HealthPACS - RepositoryContainer: Caricato 'DicomStudiesRepo' come 'repos.dicomstudiesrepo'

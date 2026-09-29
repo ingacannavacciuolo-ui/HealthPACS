@@ -5,7 +5,7 @@
    - Percentuale spazio archiviazione: percentuale spazio oltre la quale il disco non deve archiviare e passa passa a disabilitato
    - Percentuale alert:  percentuale spazio oltre la quale vien comunciato un alert di disco in riempimento.
 
-2. Completare la gestione ORM per tutte le tabelle.
+2. Completare la gestione ORM per tutte le tabelle. 
 
    
 3. Gestione dello storage dicom da parte di un nodo configurato.

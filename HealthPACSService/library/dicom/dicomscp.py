@@ -4,6 +4,8 @@
 from pydicom.uid import  ImplicitVRLittleEndian, ExplicitVRLittleEndian, ExplicitVRBigEndian
 from pynetdicom.presentation import PresentationContext
 from library.logger import logger
+from library.constant_health_pacs import ROOT_STORAGE
+from pathlib import Path
 
 
 def handle_association_requested(event, repos):
@@ -176,11 +178,51 @@ def handle_echo(event,repos):
     # 0x0000 indica 'Success' nel protocollo DICOM
     return 0x0000
 
-def handle_storage(event,repos):
+def handle_storage(event,server):
     try:
-        # Qui puoi implementare la logica per gestire lo storage dei file DICOM ricevuti
-        # Ad esempio, puoi salvare il file in una directory specifica o inviarlo a un database
-        logger.info(f"[STORAGE] Ricevuto file DICOM da {event.assoc.requestor.ae_title}")
-        # Implementazione dello storage...
+        # Recuperiamo il dataset inviato dallo SCU
+            ds = event.dataset
+            ds.file_meta = event.file_meta
+
+            # 1. Recuperiamo l'unica unità attiva da server.active_storage_units
+            if not server.active_storage_units:
+                logger.error("C-STORE: Nessuna unità di archiviazione attiva disponibile.")
+                return 0xC000  # Error: Cannot Understand
+
+            active_unit = server.active_storage_units[0]
+            drive = active_unit.get("drive_unit", "").strip()
+
+            # 2. Estraiamo lo StudyInstanceUID e prepariamo la cartella Studio
+            study_instance_uid = getattr(ds, "StudyInstanceUID", None)
+            if not study_instance_uid:
+                logger.error("C-STORE: StudyInstanceUID assente nel dataset.")
+                return 0xC000
+
+            # Path base dello studio: Drive / ROOT_STORAGE / StudyInstanceUID
+            study_dir = Path(drive) / ROOT_STORAGE / study_instance_uid
+            study_dir.mkdir(parents=True, exist_ok=True)
+
+            # 3. Gestione Database dello Studio
+            study_repo = server.repos.studiesrepo  # o il nome esatto del tuo repository
+            existing_study = study_repo.get_by_uid(study_instance_uid)
+
+            if not existing_study:
+                # Crea la nuova riga studio a DB
+                study_data = {
+                    "study_instance_uid": study_instance_uid,
+                    "patient_id": getattr(ds, "PatientID", "UNKNOWN"),
+                    "study_date": getattr(ds, "StudyDate", None),
+                    "study_time": getattr(ds, "StudyTime", None),
+                    "accession_number": getattr(ds, "AccessionNumber", None),
+                    "study_description": getattr(ds, "StudyDescription", ""),
+                    "storage_unit_id": active_unit.get("id"),
+                    "folder_path": str(study_dir),
+                }
+                study_id = study_repo.create(study_data)
+                logger.info(f"C-STORE: Creato nuovo studio ID {study_id} a DB per UID {study_instance_uid}")
+            else:
+                study_id = existing_study.get("id")
+
+            return 0x0000  # Success
     except Exception as e:
         logger.error(f"Errore durante la gestione dello storage: {e}", exc_info=True)
