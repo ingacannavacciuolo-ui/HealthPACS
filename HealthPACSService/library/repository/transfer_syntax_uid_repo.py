@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.transfer_syntax_uid_model import TransferSyntaxUidModel
+from library.models import TransferSyntaxUidModel
 
 
 class TransferSyntaxUidRepo:

@@ -1,9 +1,12 @@
 # library/models/dicom_scu_model.py
 
-from typing import Optional, List
-from sqlalchemy import String, Integer, Boolean, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import Optional, List, TYPE_CHECKING
+from sqlalchemy import String, Integer, Boolean, Text, BigInteger
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from library.models.base_model import Base
+
+if TYPE_CHECKING:
+    from library.models.dicom_equipment_model import DicomEquipmentModel
 
 
 class DicomScuModel(Base):
@@ -12,8 +15,8 @@ class DicomScuModel(Base):
     __tablename__ = "dicom_scu"
     __table_args__ = {"schema": "public"}
 
-    # Chiave Primaria (SERIAL -> int)
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    # Chiave Primaria
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
 
     # Identificativi e Connettività
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -32,4 +35,7 @@ class DicomScuModel(Base):
     sop_worklist: Mapped[Optional[bool]] = mapped_column(Boolean, default=False, nullable=True)
     sop_print: Mapped[Optional[bool]] = mapped_column(Boolean, default=False, nullable=True)
 
-
+    # Relazione ORM verso l'Equipment collegato
+    equipments: Mapped[List["DicomEquipmentModel"]] = relationship(
+        "DicomEquipmentModel", back_populates="scu"
+    )

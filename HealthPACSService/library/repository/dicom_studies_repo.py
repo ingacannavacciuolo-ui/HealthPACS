@@ -5,7 +5,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy import select, func, update, delete
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.dicom_studies_model import DicomStudiesModel
+from library.models import DicomStudiesModel, DicomSeriesModel
 
 
 class DicomStudiesRepo:
@@ -110,7 +110,6 @@ class DicomStudiesRepo:
     def create(
         self,
         study_instance_uid: str,
-        dicom_equipment_id: Optional[int] = None,
         patient_id: Optional[str] = None,
         patient_name: Optional[str] = None,
         patient_birth_date: Optional[date] = None,
@@ -122,6 +121,7 @@ class DicomStudiesRepo:
         referring_physician_name: Optional[str] = None,
         modalities_in_study: Optional[str] = None,
         study_size: int = 0,
+        dicom_equipment_id: Optional[int] = None
     ) -> Optional[int]:
         """Registra un nuovo studio DICOM.
         
@@ -132,8 +132,7 @@ class DicomStudiesRepo:
                 stmt = (
                     pg_insert(DicomStudiesModel)
                     .values(
-                        study_instance_uid=study_instance_uid.strip(),
-                        dicom_equipment_id=dicom_equipment_id,
+                        study_instance_uid=study_instance_uid.strip(),                        
                         patient_id=patient_id.strip() if patient_id else None,
                         patient_name=patient_name.strip() if patient_name else None,
                         patient_birth_date=patient_birth_date,
@@ -147,6 +146,7 @@ class DicomStudiesRepo:
                         ),
                         modalities_in_study=modalities_in_study.strip() if modalities_in_study else None,
                         study_size=study_size,
+                        dicom_equipment_id=dicom_equipment_id,
                     )
                     .on_conflict_do_nothing(index_elements=["study_instance_uid"])
                     .returning(DicomStudiesModel.id)
@@ -172,6 +172,7 @@ class DicomStudiesRepo:
                     return False
 
                 study.study_size = (study.study_size or 0) + additional_bytes
+                session.commit()  # <-- Salvataggio a DB
                 return True
         except Exception as e:
             logger.error(
@@ -193,3 +194,37 @@ class DicomStudiesRepo:
         except Exception as e:
             logger.error(f"DicomStudiesRepo: Errore cancellazione studio ID {study_id}: {e}")
             return False
+        
+
+    # -------------------------------------------------------------------------
+    # CONTEGGI E CALCOLI DINAMICI (AGGREGATED QUERIES)
+    # -------------------------------------------------------------------------
+
+    '''def get_study_statistics(self, study_id: int) -> Dict[str, Any]:
+        """Calcola e restituisce in tempo reale il numero di serie, istanze e la dimensione totale dello studio."""
+        try:
+            with self.db.get_session() as session:
+                # Esempio di query aggregata sulle serie/istanze
+                # (presuppone la relazione ORM tra Studio -> Serie -> Istanze)
+                stmt = (
+                    select(
+                        func.count(func.distinct(DicomSeriesModel.id)).label("series_count"),
+                        func.count(DicomInstancesModel.id).label("instances_count"),
+                        func.coalesce(func.sum(DicomInstancesModel.file_size), 0).label("total_bytes")
+                    )
+                    .select_from(DicomStudiesModel)
+                    .join(DicomSeriesModel, DicomSeriesModel.study_id == DicomStudiesModel.id)
+                    .join(DicomInstancesModel, DicomInstancesModel.series_id == DicomSeriesModel.id)
+                    .where(DicomStudiesModel.id == study_id)
+                )
+                res = session.execute(stmt).one_or_none()
+                if res:
+                    return {
+                        "series_count": res.series_count,
+                        "instances_count": res.instances_count,
+                        "total_bytes": res.total_bytes
+                    }
+                return {"series_count": 0, "instances_count": 0, "total_bytes": 0}
+        except Exception as e:
+            logger.error(f"DicomStudiesRepo: Errore calcolo statistiche studio ID {study_id}: {e}")
+            return {"series_count": 0, "instances_count": 0, "total_bytes": 0}'''

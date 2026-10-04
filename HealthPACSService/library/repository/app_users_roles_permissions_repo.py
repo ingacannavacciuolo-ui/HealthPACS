@@ -4,11 +4,7 @@ from typing import List, Dict, Any
 from sqlalchemy import select, delete
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.app_users_permissions_model import AppUsersPermissionsModel
-from library.models.app_users_roles_permissions_model import (
-    AppUsersRolesPermissionsModel,
-)
-
+from library.models import AppUsersPermissionsModel, AppUsersRolesPermissionsModel
 
 class AppUsersRolesPermissionsRepo:
     """Repository per la gestione delle associazioni tra Ruoli e Permessi."""

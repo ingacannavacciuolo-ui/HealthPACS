@@ -5,7 +5,8 @@ from pydicom.uid import  ImplicitVRLittleEndian, ExplicitVRLittleEndian, Explici
 from pynetdicom.presentation import PresentationContext
 from library.logger import logger
 from library.constant_health_pacs import ROOT_STORAGE
-from pathlib import Path
+from library.dicom.dicom_utility import *
+from library.utility_health_pacs import build_storage_path, ensure_directory_exists
 
 
 def handle_association_requested(event, repos):
@@ -178,51 +179,151 @@ def handle_echo(event,repos):
     # 0x0000 indica 'Success' nel protocollo DICOM
     return 0x0000
 
-def handle_storage(event,server):
+def handle_storage(event, server):
     try:
         # Recuperiamo il dataset inviato dallo SCU
-            ds = event.dataset
-            ds.file_meta = event.file_meta
+        ds = event.dataset
+        ds.file_meta = event.file_meta
 
-            # 1. Recuperiamo l'unica unità attiva da server.active_storage_units
-            if not server.active_storage_units:
-                logger.error("C-STORE: Nessuna unità di archiviazione attiva disponibile.")
-                return 0xC000  # Error: Cannot Understand
+        if not server.active_storage_units:
+            logger.error("C-STORE: Nessuna unità di archiviazione attiva disponibile.")
+            return 0xC000  # Processing Failure
 
-            active_unit = server.active_storage_units[0]
-            drive = active_unit.get("drive_unit", "").strip()
+        active_unit = server.active_storage_units[0]
+        drive = active_unit.get("drive_unit", "").strip()
 
-            # 2. Estraiamo lo StudyInstanceUID e prepariamo la cartella Studio
-            study_instance_uid = getattr(ds, "StudyInstanceUID", None)
-            if not study_instance_uid:
-                logger.error("C-STORE: StudyInstanceUID assente nel dataset.")
+        # Estrazione UID fondamentali
+        study_uid = getattr(ds, "StudyInstanceUID", None)
+        series_uid = getattr(ds, "SeriesInstanceUID", None)
+        sop_uid = getattr(ds, "SOPInstanceUID", None)
+
+        if not all([study_uid, series_uid, sop_uid]):
+            logger.error("C-STORE: DataSet privo di uno o più UID obbligatori (Study/Series/SOP).")
+            return 0xC000  # Tag DICOM obbligatori mancanti
+
+        # -------------------------------------------------------------
+        # 0. LIVELLO EQUIPMENT (Check-or-Create)
+        # -------------------------------------------------------------
+        station_name = str(getattr(ds, "StationName", "")).strip() or None
+        manufacturer = str(getattr(ds, "Manufacturer", "")).strip() or None
+        institution_name = str(getattr(ds, "InstitutionName", "")).strip() or None
+        manufacturer_model_name = str(getattr(ds, "ManufacturerModelName", "")).strip() or None
+        device_serial_number = str(getattr(ds, "DeviceSerialNumber", "")).strip() or None
+        software_versions = str(getattr(ds, "SoftwareVersions", "")).strip() or None
+
+        equipment_repo = server.repos.dicomequipmentrepo 
+
+        existing_equipment = equipment_repo.find_matching_equipment(
+            station_name=station_name,
+            manufacturer=manufacturer,
+            device_serial_number=device_serial_number
+        )
+
+        if not existing_equipment:
+            equipment_id = equipment_repo.create(
+                station_name=station_name,
+                manufacturer=manufacturer,
+                institution_name=institution_name,
+                manufacturer_model_name=manufacturer_model_name,
+                device_serial_number=device_serial_number,
+                software_versions=software_versions
+            )
+        else:
+            equipment_id = existing_equipment.get("id")
+
+        # -------------------------------------------------------------
+        # 1. LIVELLO STUDIO (public.dicom_studies)
+        # -------------------------------------------------------------       
+
+        study_repo = server.repos.dicomstudiesrepo
+        existing_study = study_repo.get_by_study_instance_uid(study_uid)
+
+        # -------------------------------------------------------------
+        # 1. LIVELLO STUDIO (public.dicom_studies)
+        # -------------------------------------------------------------
+        if not existing_study:
+            study_id = study_repo.create(
+                study_instance_uid=study_uid,
+                patient_id=clean_dicom_str(getattr(ds, "PatientID", None)),
+                patient_name=clean_dicom_str(getattr(ds, "PatientName", None)),
+                patient_birth_date=parse_dicom_date(getattr(ds, "PatientBirthDate", None)),
+                patient_sex=clean_dicom_str(getattr(ds, "PatientSex", None)),
+                study_date=parse_dicom_date(getattr(ds, "StudyDate", None)),
+                study_time=parse_dicom_time(getattr(ds, "StudyTime", None)),
+                accession_number=clean_dicom_str(getattr(ds, "AccessionNumber", None)),
+                study_description=clean_dicom_str(getattr(ds, "StudyDescription", None)),
+                referring_physician_name=clean_dicom_str(getattr(ds, "ReferringPhysicianName", None)),
+                modalities_in_study=clean_dicom_str(getattr(ds, "Modality", None)),
+                study_size=0,
+                dicom_equipment_id=equipment_id
+            )
+
+            # 2. Controllo esito inserimento DB
+            if not study_id:
+                logger.error(f"C-STORE: Impossibile registrare lo studio {study_uid} a DB.")
                 return 0xC000
 
-            # Path base dello studio: Drive / ROOT_STORAGE / StudyInstanceUID
-            study_dir = Path(drive) / ROOT_STORAGE / study_instance_uid
-            study_dir.mkdir(parents=True, exist_ok=True)
+            # 3. Creazione directory studio con utility centralizzata
+            study_dir = build_storage_path(drive, ROOT_STORAGE, study_uid)
+            logger.info(f"C-STORE: Creato nuovo studio [ID: {study_id}, UID: {study_uid}] - Path: {study_dir}")
 
-            # 3. Gestione Database dello Studio
-            study_repo = server.repos.studiesrepo  # o il nome esatto del tuo repository
-            existing_study = study_repo.get_by_uid(study_instance_uid)
+        else:
+            study_id = existing_study.get("id")
+            # Garantisce che study_dir sia sempre valorizzato e presente su disco anche se lo studio esisteva già
+            study_dir = build_storage_path(drive, ROOT_STORAGE, study_uid)
 
-            if not existing_study:
-                # Crea la nuova riga studio a DB
-                study_data = {
-                    "study_instance_uid": study_instance_uid,
-                    "patient_id": getattr(ds, "PatientID", "UNKNOWN"),
-                    "study_date": getattr(ds, "StudyDate", None),
-                    "study_time": getattr(ds, "StudyTime", None),
-                    "accession_number": getattr(ds, "AccessionNumber", None),
-                    "study_description": getattr(ds, "StudyDescription", ""),
-                    "storage_unit_id": active_unit.get("id"),
-                    "folder_path": str(study_dir),
-                }
-                study_id = study_repo.create(study_data)
-                logger.info(f"C-STORE: Creato nuovo studio ID {study_id} a DB per UID {study_instance_uid}")
-            else:
-                study_id = existing_study.get("id")
+        # -------------------------------------------------------------
+        # 2. LIVELLO SERIE (public.dicom_series)
+        # -------------------------------------------------------------
+        series_repo = server.repos.dicomseriesrepo
+        existing_series = series_repo.get_by_series_instance_uid(series_uid)
 
-            return 0x0000  # Success
+        if not existing_series:
+            # 1. Inserimento a DB
+            series_id = series_repo.create(
+                study_id=study_id,
+                series_instance_uid=series_uid,
+                series_number=getattr(ds, "SeriesNumber", None),
+                modality=clean_dicom_str(getattr(ds, "Modality", None)),
+                series_description=clean_dicom_str(getattr(ds, "SeriesDescription", None)),
+                body_part_examined=clean_dicom_str(getattr(ds, "BodyPartExamined", None)),
+                patient_position=clean_dicom_str(getattr(ds, "PatientPosition", None)),
+                series_date=parse_dicom_date(getattr(ds, "SeriesDate", None)),
+                series_time=parse_dicom_time(getattr(ds, "SeriesTime", None)),
+            )
+
+            # 2. Verifica esito scrittura DB
+            if not series_id:
+                logger.error(f"C-STORE: Impossibile registrare la serie {series_uid} a DB.")
+                return 0xC000
+
+            # 3. Creazione directory della Serie tramite utility
+            series_dir = ensure_directory_exists(study_dir / series_uid)
+            logger.info(f"C-STORE: Creata nuova serie [ID: {series_id}, UID: {series_uid}] - Path: {series_dir}")
+
+        else:
+            series_id = existing_series.get("id")
+            # Garantisce l'esistenza della directory della serie e la sua assegnazione
+            series_dir = ensure_directory_exists(study_dir / series_uid)
+
+        # -------------------------------------------------------------
+        # 3. LIVELLO ISTANZA (FILE .DCM)
+        # -------------------------------------------------------------
+        '''file_path = series_dir / f"{sop_uid}.dcm"
+        
+        # Salva il file DICOM su disco
+        ds.save_as(file_path, write_like_original=False)
+
+        # Inserisce l'istanza a DB
+        instance_repo = server.repos.instancesrepo
+        instance_repo.create({
+            "sop_instance_uid": sop_uid,
+            "series_id": series_id,
+            "instance_number": getattr(ds, "InstanceNumber", None),
+            "file_path": str(file_path)
+        })'''
+
+        return 0x0000  # Success
     except Exception as e:
         logger.error(f"Errore durante la gestione dello storage: {e}", exc_info=True)
+        return 0xC000  # Processing Failure

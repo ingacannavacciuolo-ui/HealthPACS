@@ -4,10 +4,7 @@ from typing import Optional, List, Dict, Any, Set
 from sqlalchemy import select, update, delete
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.app_users_model import AppUsersModel
-from library.models.app_users_roles_model import AppUsersRolesModel
-from library.models.app_users_roles_permissions_model import AppUsersRolesPermissionsModel
-from library.models.app_users_permissions_model import AppUsersPermissionsModel
+from library.models import AppUsersModel, AppUsersRolesModel, AppUsersRolesPermissionsModel, AppUsersPermissionsModel
 
 class AppUsersRepo:
     """Repository ORM per la gestione degli utenti nella tabella public.app_users."""

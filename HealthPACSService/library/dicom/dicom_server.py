@@ -1,12 +1,13 @@
 # dicomserver.py
-import time
-from pathlib import Path
+import logging
 from pynetdicom import AE, evt
+from pynetdicom import AllStoragePresentationContexts
 from pynetdicom.sop_class import Verification
 from pydicom.uid import ImplicitVRLittleEndian, ExplicitVRLittleEndian, ExplicitVRBigEndian
+from library.utility_health_pacs import build_storage_path, ensure_directory_exists
 from library.constant_health_pacs import IMPLEMENTATION_CLASS_UID, IMPLEMENTATION_VERSION_NAME, ROOT_STORAGE
 from library.logger import logger
-from library.dicom.dicomscp import (
+from library.dicom.dicom_scp import (
     handle_echo,
     handle_storage,
     handle_association_requested,
@@ -93,21 +94,30 @@ class DicomServer:
                 logger.warning(f"DicomServer: Unità storage ID {unit.get('id')} ha un drive_unit vuoto, ignorata.")
                 continue
 
-            target_dir = Path(drive) / ROOT_STORAGE
-
             try:
-                if not target_dir.exists():
-                    target_dir.mkdir(parents=True, exist_ok=True)
-                    logger.info(f"DicomServer: Creata nuova cartella di archiviazione: {target_dir}")
-                else:
-                    logger.info(f"DicomServer: Cartella di archiviazione esistente verificata: {target_dir}")
+                # Utilizzo della funzione centralizzata per creare e verificare il path
+                target_dir = build_storage_path(drive, ROOT_STORAGE)
+                logger.info(f"DicomServer: Unità di archiviazione pronta all'uso su {target_dir}")
             except Exception as e:
-                raise OSError(f"Impossibile creare/verificare la cartella di archiviazione '{target_dir}': {e}")
+                raise OSError(f"DicomServer: Impossibile inizializzare l'unità di archiviazione per drive '{drive}': {e}")
 
     def _setup_dicom_server(self):
         """
-        Configura il server DICOM con i parametri specificati.
+        Configura il server DICOM con i parametri specificati e
+        aggancia il logger interno di pynetdicom al logger dell'applicazione.
         """
+        # -------------------------------------------------------------
+        # CONFIGURAZIONE DEBUG LOGGING PYNETDICOM -> HealthPACS
+        # -------------------------------------------------------------
+        pynetdicom_logger = logging.getLogger("pynetdicom")
+        pynetdicom_logger.setLevel(logging.DEBUG)
+
+        # Evita di aggiungere duplicate handler se il metodo viene richiamato
+        pynetdicom_logger.handlers.clear()
+
+        for handler in logger.handlers:
+            pynetdicom_logger.addHandler(handler)
+        # -------------------------------------------------------------
         ae_title = self.config_scp.get("ae_title")
         if not ae_title:
             raise ValueError("AE Title non specificato nella configurazione SCP.")
@@ -143,6 +153,9 @@ class DicomServer:
         con le Transfer Syntax di default.
         """
         self.ae.add_supported_context(Verification, self.default_transfer_syntaxes)
+
+        # 2. Tutte le SOP Class di Archiviazione (C-STORE)
+        self.ae.supported_contexts = AllStoragePresentationContexts
 
     def start(self):
         """

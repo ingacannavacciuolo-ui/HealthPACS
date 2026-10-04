@@ -1,10 +1,11 @@
+from library.models import Base
 import time
 import threading
 import uvicorn
 from fastapi import FastAPI
 
 from library.logger import logger, setup_logger_file
-from library.dicom.dicomserver import DicomServer
+from library.dicom.dicom_server import DicomServer
 from library.dbmanager import DatabaseManager
 from library.repository.container import RepositoryContainer
 
@@ -74,10 +75,13 @@ def main():
             logger.error("Impossibile connettersi al database. Arresto dell'applicazione.")
             return
         
+        # <-- AGGIUNGI QUESTA RIGA PER INIZIALIZZARE IL REGISTRO MODELLI SUL DB -->
+        Base.metadata.create_all(bind=dbmanager.engine)
+        
         # Salviamo il dbmanager direttamente dentro l'app FastAPI
         app.state.dbmanager = dbmanager
 
-        # 2. Caricamento automatico di TUTTI i repository presenti nel folder
+        # 2. Caricamento automatico di TUTTI i repository (REPO) presenti nel folder
         repos = RepositoryContainer(dbmanager)        
                 
         dicom_server = start_dicom_server(dbmanager, repos) 

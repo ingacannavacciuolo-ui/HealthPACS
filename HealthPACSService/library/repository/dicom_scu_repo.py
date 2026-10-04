@@ -3,7 +3,7 @@
 from typing import Optional, List, Dict, Any, Union
 from sqlalchemy import select, and_
 from library.logger import logger
-from library.models.dicom_scu_model import DicomScuModel
+from library.models import DicomScuModel
 
 
 class DicomSCURepo:

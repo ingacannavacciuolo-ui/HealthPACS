@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy import select, update, delete
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.app_users_roles_model import AppUsersRolesModel
+from library.models import AppUsersRolesModel
 
 
 class AppUsersRolesRepo:

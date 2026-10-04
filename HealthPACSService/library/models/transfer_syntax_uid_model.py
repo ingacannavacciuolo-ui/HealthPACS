@@ -1,6 +1,6 @@
 # library/models/transfer_syntax_uid_model.py
 
-from sqlalchemy import String
+from sqlalchemy import String, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 from library.models.base_model import Base
 
@@ -12,7 +12,7 @@ class TransferSyntaxUidModel(Base):
     __table_args__ = {"schema": "public"}
 
     # Chiave Primaria
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
 
     # Campi con vincolo UNIQUE su uid
     uid: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)

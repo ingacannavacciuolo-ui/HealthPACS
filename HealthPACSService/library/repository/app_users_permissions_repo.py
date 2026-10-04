@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.app_users_permissions_model import AppUsersPermissionsModel
+from library.models import AppUsersPermissionsModel
 
 
 class AppPermissionsRepo:

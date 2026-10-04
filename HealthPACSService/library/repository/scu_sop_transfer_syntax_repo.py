@@ -6,10 +6,8 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
 
 # Importiamo i modelli necessari per eseguire le JOIN
-from library.models.scu_sop_transfer_syntax_model import ScuSopTransferSyntaxModel
-from library.models.dicom_scu_model import DicomScuModel
-from library.models.sop_class_uid_model import SopClassUidModel
-from library.models.transfer_syntax_uid_model import TransferSyntaxUidModel
+from library.models import ScuSopTransferSyntaxModel,DicomScuModel, SopClassUidModel,TransferSyntaxUidModel
+
 
 
 class ScuSopTransferSyntaxRepo:

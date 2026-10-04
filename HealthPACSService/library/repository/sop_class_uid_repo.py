@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.sop_class_uid_model import SopClassUidModel
+from library.models import SopClassUidModel
 
 
 class SopClassUidRepo:

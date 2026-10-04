@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, Dict, Any
 from sqlalchemy import select, update
 from library.logger import logger
-from library.models.app_users_sessions_model import AppUsersSessionsModel
+from library.models import AppUsersSessionsModel
 
 
 class AppUsersSessionsRepo:

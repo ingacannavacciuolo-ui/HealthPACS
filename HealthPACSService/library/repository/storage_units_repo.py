@@ -3,7 +3,7 @@
 from typing import Optional, List, Dict, Any
 from sqlalchemy import select
 from library.logger import logger
-from library.models.storage_unit_model import StorageUnitModel
+from library.models import StorageUnitModel
 
 
 class StorageUnitsRepo:

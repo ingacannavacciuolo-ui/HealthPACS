@@ -15,3 +15,7 @@
          con una modalità fast.
       3. Trovare l'archivio a minor dimensione in cui salvare lo STUDIO   
 
+4. Passare il livello di debug per 
+        pynetdicom_logger = logging.getLogger("pynetdicom")
+        pynetdicom_logger.setLevel(logging.DEBUG)
+   dall'esterno.

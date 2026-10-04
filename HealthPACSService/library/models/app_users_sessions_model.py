@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import String, DateTime, Boolean, ForeignKey, func
+from sqlalchemy import String, DateTime, Boolean, BigInteger, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 from library.models.base_model import Base
 
@@ -13,10 +13,10 @@ class AppUsersSessionsModel(Base):
     __tablename__ = "app_users_sessions"
     __table_args__ = {"schema": "public"}
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("public.app_users.id", ondelete="CASCADE"), nullable=False
-    )
+    # Chiave Primaria
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+
+    # Dati della Sessione
     session_token: Mapped[str] = mapped_column(
         String(64), unique=True, nullable=False, index=True
     )
@@ -37,4 +37,11 @@ class AppUsersSessionsModel(Base):
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, default=True, nullable=False
+    )
+
+    # Chiave Esterna verso l'Utente (posizionata come ultimo campo)
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("public.app_users.id", ondelete="CASCADE"),
+        nullable=False,
     )

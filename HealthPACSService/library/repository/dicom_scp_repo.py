@@ -3,7 +3,7 @@
 from typing import Optional, Dict, Any
 from sqlalchemy import select
 from library.logger import logger
-from library.models.dicom_scp_model import DicomScpModel
+from library.models import DicomScpModel
 
 
 class DicomScpRepo:

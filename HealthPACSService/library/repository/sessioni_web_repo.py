@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 from sqlalchemy import select, delete
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from library.logger import logger
-from library.models.sessioni_web_model import SessioniWebModel
+from library.models import SessioniWebModel
 
 
 class SessioniWebRepo:
