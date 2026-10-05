@@ -1,3 +1,18 @@
-﻿**/.venv/
-**/__pycache__/
+﻿# Ambiente virtuale Python
+venv/
+env/
+ENV/
+
+# Byte-compiled / cache di Python
+__pycache__/
 *.pyc
+*$py.class
+
+# Log di sistema
+log/*.log*
+*.log
+
+# File temporanei degli IDE
+.vscode/
+.idea/
+*.swp

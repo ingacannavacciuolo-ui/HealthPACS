@@ -22,3 +22,7 @@
 
 
    5. Gestire l'abilitazione e disattivazione dei log.
+
+6. Gestire la durata della sessione in minuti per gli utenti connessi (vedi @router.post("/login") in # library/api/web/pages_router.py)
+
+7. Fare la pagina di login per verifica autenticazione . URGENTE

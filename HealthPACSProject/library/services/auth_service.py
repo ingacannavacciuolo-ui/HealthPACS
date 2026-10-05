@@ -30,12 +30,13 @@ class AuthService:
         
         1. Cerca l'utente per username e ne verifica lo stato (is_active).
         2. Verifica l'hash Argon2id della password fornita.
-        3. Calcola l'insieme dei permessi effettivi dell'utente (Ruolo + Overrides).
-        4. Genera un token crittograficamente sicuro e registra la sessione a DB.
+        3. Genera un token crittograficamente sicuro di 64 caratteri esadecimali.
+        4. Registra la sessione nella tabella app_users_sessions con IP e User-Agent.
+        5. Calcola l'insieme dei permessi effettivi dell'utente (Ruolo + Overrides).
         """
         clean_username = username.strip()
 
-        # 1. Recupera l'utente
+        # 1. Recupera l'utente dal repository
         user = self.users_repo.get_by_username(clean_username)
         if not user:
             logger.warning(
@@ -49,7 +50,7 @@ class AuthService:
             )
             return None
 
-        # 2. Verifica hash della password
+        # 2. Verifica hash della password con Argon2id
         try:
             self.ph.verify(user["password_hash"], password_plain)
         except (VerifyMismatchError, VerificationError):
@@ -66,7 +67,7 @@ class AuthService:
         # 3. Generazione Token di Sessione Unico (64 caratteri esadecimali)
         session_token = secrets.token_hex(32)
 
-        # 4. Registrazione della sessione sul database
+        # 4. Registrazione della sessione sulla tabella unificata app_users_sessions
         session_id = self.sessions_repo.create_session(
             user_id=user["id"],
             session_token=session_token,
@@ -81,7 +82,7 @@ class AuthService:
             )
             return None
 
-        # 5. Calcolo permessi effettivi (Ruolo + Exceptions)
+        # 5. Calcolo permessi effettivi (Ruolo + Eccezioni)
         permissions = self.users_repo.get_effective_permission_codes(user["id"])
 
         logger.info(
@@ -92,16 +93,20 @@ class AuthService:
             "session_token": session_token,
             "user_id": user["id"],
             "username": user["username"],
-            "role_id": user["users_roles_id"],
+            "role_id": user.get("users_roles_id"),
             "permissions": list(permissions),
         }
 
     def validate_session(self, session_token: str) -> Optional[Dict[str, Any]]:
-        """Verifica se un token inviato è attivo e valido.
+        """Verifica se un token di sessione inviato è attivo e non scaduto.
         
-        Se la sessione è valida, aggiorna l'orario di ultima attività (sliding expiration)
-        e restituisce il profilo utente aggiornato con i relativi permessi.
+        Se la sessione è valida, aggiorna l'orario di ultima attività e prologa
+        la scadenza (Sliding Expiration), restituendo il profilo utente e i permessi.
         """
+        if not session_token:
+            return None
+
+        # Recupera e aggiorna la sessione nel DB (touch_activity=True aggiorna last_activity ed expires_at)
         session_data = self.sessions_repo.get_valid_session(
             session_token, touch_activity=True
         )
@@ -109,13 +114,20 @@ class AuthService:
             return None
 
         user_id = session_data["user_id"]
+        
+        # Recupera i dettagli dell'utente se non presenti nella sessione
+        user = self.users_repo.get_by_id(user_id) if hasattr(self.users_repo, 'get_by_id') else None
+        username = user["username"] if user else session_data.get("username", "")
+
         permissions = self.users_repo.get_effective_permission_codes(user_id)
 
         return {
             "session_id": session_data["id"],
             "user_id": user_id,
+            "username": username,
             "session_token": session_token,
             "expires_at": session_data["expires_at"],
+            "ip_address": session_data.get("ip_address"),
             "permissions": set(permissions),
         }
 
@@ -127,7 +139,9 @@ class AuthService:
         return required_permission in session_info["permissions"]
 
     def logout(self, session_token: str) -> bool:
-        """Effettua il logout invalidando il token della sessione nel DB."""
+        """Effettua il logout invalidando il token della sessione sul DB (imposta is_active = False)."""
+        if not session_token:
+            return False
         return self.sessions_repo.invalidate_session(session_token)
 
     def logout_all_sessions(self, user_id: int) -> bool:
