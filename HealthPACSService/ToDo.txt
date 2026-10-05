@@ -19,3 +19,6 @@
         pynetdicom_logger = logging.getLogger("pynetdicom")
         pynetdicom_logger.setLevel(logging.DEBUG)
    dall'esterno.
+
+
+   5. Gestire l'abilitazione e disattivazione dei log.

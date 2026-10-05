@@ -6,7 +6,7 @@ from pynetdicom.sop_class import Verification
 from pydicom.uid import ImplicitVRLittleEndian, ExplicitVRLittleEndian, ExplicitVRBigEndian
 from library.utility_health_pacs import build_storage_path, ensure_directory_exists
 from library.constant_health_pacs import IMPLEMENTATION_CLASS_UID, IMPLEMENTATION_VERSION_NAME, ROOT_STORAGE
-from library.logger import logger
+from library.logger import logger, setup_pynetdicom_logging
 from library.dicom.dicom_scp import (
     handle_echo,
     handle_storage,
@@ -15,6 +15,7 @@ from library.dicom.dicom_scp import (
     handle_association_released,
     handle_association_aborted
 )
+
 
 
 class DicomServer:
@@ -109,6 +110,7 @@ class DicomServer:
         # -------------------------------------------------------------
         # CONFIGURAZIONE DEBUG LOGGING PYNETDICOM -> HealthPACS
         # -------------------------------------------------------------
+        setup_pynetdicom_logging()
         pynetdicom_logger = logging.getLogger("pynetdicom")
         pynetdicom_logger.setLevel(logging.DEBUG)
 

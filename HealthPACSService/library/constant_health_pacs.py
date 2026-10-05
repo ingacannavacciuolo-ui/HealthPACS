@@ -17,6 +17,12 @@ CONFIG_DATABASE_PASSWORD        = 'password'
 #**********************************************
 ROOT_STORAGE = 'ArchiveRoot'  # Nome radice archivio DICOM
 
+
+#COSTANTI INTERNE
+#**********************************************
+APPLICATION_NAME = 'HealthPACS'  # Nome dell'applicazione
+LOG_FILE_NAME = 'healthpacs.log'  # Nome del file di log
+
 #CONSTANTS DICOM
 #*********************************************
 HEALT_PACS_ID_APPLICATION = '1.1'
