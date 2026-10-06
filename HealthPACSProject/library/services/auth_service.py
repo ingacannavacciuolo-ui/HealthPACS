@@ -5,8 +5,9 @@ from typing import Optional, Dict, Any
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
 from library.logger import logger
-from library.repository.app_users_repo import AppUsersRepo
-from library.repository.app_users_sessions_repo import AppUsersSessionsRepo
+from library.repository import AppUsersRepo
+from library.repository import AppUsersSessionsRepo
+from library.repository import AppSystemSettingsRepo
 
 
 class AuthService:
@@ -16,13 +17,30 @@ class AuthService:
         self.db = db_manager
         self.users_repo = AppUsersRepo(db_manager)
         self.sessions_repo = AppUsersSessionsRepo(db_manager)
+        self.settings_repo = AppSystemSettingsRepo(db_manager)
         self.ph = PasswordHasher()
+
+    def _get_session_duration_minutes(self) -> int:
+        """Legge la durata della sessione dal database (public.app_system_settings).
+
+        Fallback a 30 minuti in caso di errore o valore mancante.
+        """
+        val_str = self.settings_repo.get_setting_value(
+            "session_duration_minutes", default_value="480"
+        )
+        try:
+            return int(val_str)
+        except (ValueError, TypeError):
+            logger.warning(
+                f"AuthService: Valore non valido per 'session_duration_minutes' ('{val_str}'). Uso fallback a 30m."
+            )
+            return 30
 
     def login(
         self,
         username: str,
         password_plain: str,
-        duration_minutes: int = 480,  # 8 ore di validità predefinita
+        duration_minutes: Optional[int] = None, 
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
@@ -64,7 +82,11 @@ class AuthService:
             )
             return None
 
-        # 3. Generazione Token di Sessione Unico (64 caratteri esadecimali)
+        # 3. Determina la durata della sessione (da DB se non passata esplicitamente)
+        if duration_minutes is None:
+            duration_minutes = self._get_session_duration_minutes()
+            
+        # 4. Generazione Token di Sessione Unico (64 caratteri esadecimali)
         session_token = secrets.token_hex(32)
 
         # 4. Registrazione della sessione sulla tabella unificata app_users_sessions

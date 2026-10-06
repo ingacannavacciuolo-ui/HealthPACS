@@ -1,0 +1,92 @@
+/* Variables & General Theme Setup */
+:root {
+    --bg-gradient-start: #031427;
+    --bg-gradient-end: #072642;
+    --accent-blue: #0088e8;
+    --accent-cyan: #00d2ff;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --text-dark: #1e293b;
+    --text-light: #e2e8f0;
+    --danger-red: #ef4444;
+    --border-glow: rgba(0, 210, 255, 0.35);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at center, var(--bg-gradient-end) 0%, var(--bg-gradient-start) 100%);
+    color: var(--text-light);
+}
+
+/* Structural Layout */
+.login-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+}
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.brand-logo span {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--accent-cyan);
+    letter-spacing: 2px;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 1.15rem;
+    letter-spacing: 1.5px;
+    color: #e0f2fe;
+    text-transform: uppercase;
+    margin: 15px 0 25px 0;
+}
+
+.main-content-grid {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 40px;
+    padding: 0 40px;
+}
+
+.left-panel {
+    flex: 0 0 380px;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+}

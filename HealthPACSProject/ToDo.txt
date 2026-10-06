@@ -25,4 +25,9 @@
 
 6. Gestire la durata della sessione in minuti per gli utenti connessi (vedi @router.post("/login") in # library/api/web/pages_router.py)
 
-7. Fare la pagina di login per verifica autenticazione . URGENTE
+7. Fare la pagina di login per verifica autenticazione . Completare con scelta loghi e colori. URGENTE
+
+8. Realizzare il processo di recupero password.
+
+8. Inserire lo stato della connessione del server.
+

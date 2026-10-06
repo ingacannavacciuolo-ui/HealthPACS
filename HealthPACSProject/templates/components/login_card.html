@@ -1,0 +1,63 @@
+<!-- Componente Card di Autenticazione -->
+<div class="login-card-container">
+    <div class="login-card">
+        <div class="card-header">
+            <div class="card-icon">
+                <!-- Icona tesserino / ID sanitaria -->
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#007acc" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2"/>
+                    <circle cx="9" cy="10" r="2.5"/>
+                    <path d="M15 8h4M15 12h4M6 16h12"/>
+                </svg>
+            </div>
+            <h2>Autenticazione</h2>
+        </div>
+
+        {% if error %}
+        <div class="login-error-alert" id="loginErrorAlert">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST" id="loginForm">
+            <div class="form-group">
+                <div class="input-icon-wrapper">
+                    <span class="input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                    <input type="text" id="username" name="username" placeholder="Nome Utente (es. r.rossi)" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-icon-wrapper">
+                    <span class="input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </span>
+                    <input type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+                    <button type="button" class="toggle-password" id="togglePasswordBtn" title="Mostra/Nascondi Password">
+                        <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnSubmit">
+                ACCEDI
+            </button>
+        </form>
+
+        <div class="card-footer-links">
+            <a href="#" class="card-link" onclick="alert('Contattare l\'amministratore di sistema per il reset password.')">Password dimenticata?</a>
+            <a href="#" class="card-link">Seleziona Unità Organizzativa</a>
+        </div>
+    </div>
+</div>

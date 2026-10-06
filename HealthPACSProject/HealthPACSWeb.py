@@ -9,7 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from library.dbmanager import DatabaseManager
 from library.logger import logger, setup_logger_file
 from library.repository.container import RepositoryContainer
-from library.api.web.pages_router import router as pages_router
+from library.api import pages_router, web_router_socket
+
 
 shutdown_event = threading.Event()
 
@@ -40,18 +41,7 @@ def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> Fa
 
     # 2. Registrazione del router per le pagine HTML (Login e Base)
     app.include_router(pages_router)
-
-    # 3. Gestore WebSocket per la comunicazione in tempo reale dell'interfaccia web
-    @app.websocket("/ws/web")
-    async def websocket_web(websocket: WebSocket):
-        await websocket.accept()
-        logger.info("[WEB WS] Client connesso a HealthPACS Web")
-        try:
-            while True:
-                data = await websocket.receive_text()
-                await websocket.send_json({"status": "ok", "echo": data})
-        except WebSocketDisconnect:
-            logger.info("[WEB WS] Client disconnesso da HealthPACS Web")
+    app.include_router(web_router_socket)
 
     return app
 
@@ -73,10 +63,11 @@ def main():
         repos = RepositoryContainer(dbmanager)
         app = create_web_app(dbmanager, repos)
 
-        host = "0.0.0.0"
-        port = 5000
 
-        config = uvicorn.Config(app=app, host=host, port=port, log_level="info")
+        host = "0.0.0.0"
+        port = 5000 # Deve caricarla da database
+
+        config = uvicorn.Config(app=app, host=host, port=port, log_level="info") # il level_log deve caricarlo da datab
         server = uvicorn.Server(config)
 
         logger.info(f"Avvio HealthPACS Web Server su http://{host}:{port}")

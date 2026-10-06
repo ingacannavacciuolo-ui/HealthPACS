@@ -7,7 +7,7 @@ from library.logger import logger
 router = APIRouter()
 
 
-@router.websocket("/ws/studies")
+@router.websocket("/studies")
 async def studies_websocket_endpoint(
     websocket: WebSocket, service: DicomStudiesService = Depends()
 ):

@@ -1,0 +1,97 @@
+/* Stili della pagina di Login con Top Bar integrata */
+.login-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+    
+    /* Overlay scuro + Immagine di sfondo */
+    background-image: 
+        linear-gradient(rgba(2, 10, 25, 0.6), rgba(5, 15, 35, 0.8)),
+        url('/static/img/Login_Background_1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Card in alto a tutta larghezza */
+.login-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5, 15, 35, 0.88);
+    border: 1.5px solid #00f0ff;
+    border-radius: 12px;
+    padding: 12px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4),
+                0 0 35px rgba(0, 102, 255, 0.25),
+                inset 0 0 12px rgba(0, 240, 255, 0.15);
+    backdrop-filter: blur(12px);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Spaziatura ancora più ridotta tra logo e testo */
+}
+
+.logo-image {
+    height: 70px; /* Logo lievemente più piccolo e proporzionato */
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.6));
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    white-space: nowrap; /* Forza tutto il blocco testo su righe uniche */
+}
+
+.logo-text h1 {
+    display: inline-block; /* Mantiene Health e PACS perfettamente uniti */
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    white-space: nowrap; /* Garantisce nessuna interruzione tra Health e PACS */
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+.logo-text h1 .highlight-pacs {
+    font-size: inherit; /* Eredita esattamente la dimensione di Health */
+    font-weight: inherit; /* Eredita lo stesso spessore di Health */
+    color: #00f0ff;
+    display: inline; /* Assicura che rimanga adiacente a Health */
+    margin-left: 0; /* Nessun distacco extra oltre allo spessore del font */
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 16px rgba(0, 102, 255, 0.7);
+}
+
+.logo-text span {
+    display: block;
+    font-size: 0.50rem;
+    color: #00f0ff;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 1.15rem;
+    letter-spacing: 1.5px;
+    color: #d4ecee;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    text-transform: uppercase;
+    margin: 10px 0 25px 0;
+}

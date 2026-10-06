@@ -1,4 +1,5 @@
 from .container import RepositoryContainer
+from .app_system_settings_repo import AppSystemSettingsRepo
 from .app_users_repo import AppUsersRepo
 from .app_users_permissions_repo import AppPermissionsRepo
 from .app_users_roles_repo import AppUsersRolesRepo
@@ -17,6 +18,7 @@ from .transfer_syntax_uid_repo import TransferSyntaxUidRepo
 
 __all__ = [
     "RepositoryContainer",
+    "AppSystemSettingsRepo",
     "AppUsersRepo",
     "AppPermissionsRepo",
     "AppUsersRolesRepo",

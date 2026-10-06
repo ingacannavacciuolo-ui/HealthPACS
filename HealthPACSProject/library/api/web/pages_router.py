@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from library.services.auth_service import AuthService
-from library.api.web.dependencies import get_auth_service
+from library.api.web.dependencies import get_auth_service, get_current_user_session
 
 router = APIRouter(tags=["Web Pages"])
 
@@ -19,13 +19,16 @@ templates = Jinja2Templates(directory=templates_dir)
 
 @router.get("/", response_class=HTMLResponse)
 async def login_page(request: Request, auth_service: AuthService = Depends(get_auth_service)):
-    """Mostra la pagina di login. Se la sessione è già valida, reindirizza alla home/login."""
+    """Mostra la pagina di login. Se la sessione è già valida, reindirizza a /querystudies."""
     token = request.cookies.get("session_token")
     if token and auth_service.validate_session(token):
-        # In futuro reindirizzerà alla pagina principale (es. /querystudies o /worksstudies)
-        pass
+        return RedirectResponse(url="/querystudies", status_code=status.HTTP_302_FOUND)
 
-    return templates.TemplateResponse("login.html", {"request": request, "title": "HealthPACS Web - Login"})
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html",
+        context={"title": "HealthPACS Web - Login"}
+    )
 
 
 @router.post("/login")
@@ -35,7 +38,7 @@ async def do_login(
     password: str = Form(...),
     auth_service: AuthService = Depends(get_auth_service)
 ):
-    client_ip = request.client.host if request.client else "127.0.0.1"
+    client_ip = request.client.host if request.client else "0.0.0.0"
     user_agent = request.headers.get("User-Agent", "Web-Browser")
 
     # AuthService salverà i metadati su app_users_sessions
@@ -48,14 +51,18 @@ async def do_login(
 
     if not auth_result:
         return templates.TemplateResponse(
-            "login.html",
-            {"request": request, "error": "Credenziali non valide."},
+            request=request,
+            name="login.html",
+            context={
+                "title": "HealthPACS Web - Login",
+                "error": "Credenziali non valide."
+            },
             status_code=status.HTTP_401_UNAUTHORIZED
         )
 
     session_token = auth_result["session_token"]
 
-    redirect_response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    redirect_response = RedirectResponse(url="/querystudies", status_code=status.HTTP_303_SEE_OTHER)
     redirect_response.set_cookie(
         key="session_token",
         value=session_token,
@@ -79,3 +86,8 @@ async def logout(
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     response.delete_cookie("session_token")
     return response
+
+
+@router.get("/querystudies", response_class=HTMLResponse)
+async def query_studies_page(user: dict = Depends(get_current_user_session)):
+    return f"<h1>Benvenuto {user.get('username', 'Utente')}!</h1><p>Login effettuato con successo.</p><a href='/logout'>Logout</a>"

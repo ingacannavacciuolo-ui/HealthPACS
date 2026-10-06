@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="/static/css/components/login_card.css">
+</head>
+<body>
+    <div class="login-page-wrapper">
+        <!-- Card in alto dedicata solo alla Login Page -->
+        <header class="login-top-bar">
+           <div class="brand-logo">
+                <!-- Logo SVG con sfondo trasparente -->
+                <img src="/static/img/LogoHealtPACS.png" alt="HealthPACS Logo" class="logo-image">
+
+                <!-- Scritte affiancate a destra del logo -->
+                <div class="logo-text">
+                    <h1>Health<span class="highlight-pacs">PACS</span></h1>
+                    <span>MEDICAL IMAGE MANAGEMENT</span>
+                </div>
+            </div>
+                    
+            <div class="top-bar-right">
+                <!-- Riservato per status o lingua della login -->
+            </div>
+        </header>
+
+        <div class="page-title">
+            ACCESSO SISTEMA ARCHIVIAZIONE IMMAGINI (PACS)
+        </div>
+
+        <main class="main-content-centered">
+            <div class="left-panel">
+                {% include "components/login_card.html" %}
+            </div>
+
+            <div class="right-panel">
+                <!-- Spazio per notifiche / immagini PACS -->
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/components/login_card.js"></script>
+    <script src="/static/js/login.js"></script>
+</body>
+</html>
