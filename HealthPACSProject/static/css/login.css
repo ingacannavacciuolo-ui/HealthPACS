@@ -7,7 +7,7 @@
     
     /* Overlay scuro + Immagine di sfondo */
     background-image: 
-        linear-gradient(rgba(2, 10, 25, 0.6), rgba(5, 15, 35, 0.8)),
+        linear-gradient(rgba(9, 2, 25, 0.5), rgba(5, 15, 35, 0.5)),
         url('/static/img/Login_Background_1.jpg');
     background-size: cover;
     background-position: center;
