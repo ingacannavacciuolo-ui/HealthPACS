@@ -7,7 +7,7 @@
     
     /* Overlay scuro + Immagine di sfondo */
     background-image: 
-        linear-gradient(rgba(9, 2, 25, 0.5), rgba(5, 15, 35, 0.5)),
+        linear-gradient(rgba(9, 2, 25, 0.7), rgba(5, 15, 35, 0.7)),
         url('/static/img/Login_Background_1.jpg');
     background-size: cover;
     background-position: center;
@@ -25,8 +25,8 @@
     border-radius: 12px;
     padding: 12px 28px;
     margin-bottom: 20px;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4),
-                0 0 35px rgba(0, 102, 255, 0.25),
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4),
+                0 0 15px rgba(0, 102, 255, 0.25),
                 inset 0 0 12px rgba(0, 240, 255, 0.15);
     backdrop-filter: blur(12px);
 }
@@ -41,7 +41,7 @@
     height: 70px; /* Logo lievemente più piccolo e proporzionato */
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.6));
+    filter: drop-shadow(0 0 1px rgba(0, 240, 255, 0.6));
 }
 
 .logo-text {
@@ -53,45 +53,47 @@
 
 .logo-text h1 {
     display: inline-block; /* Mantiene Health e PACS perfettamente uniti */
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 600;
     color: #ffffff;
-    letter-spacing: 0.5px;
+    letter-spacing: 0px;
     margin: 0;
     padding: 0;
     line-height: 1;
     white-space: nowrap; /* Garantisce nessuna interruzione tra Health e PACS */
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    /*text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);*/
 }
 
 .logo-text h1 .highlight-pacs {
     font-size: inherit; /* Eredita esattamente la dimensione di Health */
-    font-weight: inherit; /* Eredita lo stesso spessore di Health */
-    color: #00f0ff;
+    font-weight: 600; /* Eredita lo stesso spessore di Health */
+    color: #3f94bc;
     display: inline; /* Assicura che rimanga adiacente a Health */
     margin-left: 0; /* Nessun distacco extra oltre allo spessore del font */
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 16px rgba(0, 102, 255, 0.7);
+    /*text-shadow: 0 0 10px hsl(219, 100%, 50%), 0 0 16px rgba(0, 102, 255, 0.7);*/
+    
 }
 
 .logo-text span {
     display: block;
-    font-size: 0.50rem;
-    color: #00f0ff;
-    letter-spacing: 1.5px;
+    font-size: 0.80rem;
+    color: #ffffff;
+    letter-spacing: 3.7px;
     margin-top: 3px;
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
     white-space: nowrap;
     opacity: 0.9;
+    margin-left: 2px; 
 }
 
 .page-title {
     text-align: center;
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     letter-spacing: 1.5px;
-    color: #d4ecee;
+    color: hsla(210, 3%, 85%, 0.945);
     font-weight: 600;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
     text-transform: uppercase;
     margin: 10px 0 25px 0;
 }

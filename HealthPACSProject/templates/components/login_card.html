@@ -3,14 +3,9 @@
     <div class="login-card">
         <div class="card-header">
             <div class="card-icon">
-                <!-- Icona tesserino / ID sanitaria -->
-                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#007acc" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="16" rx="2"/>
-                    <circle cx="9" cy="10" r="2.5"/>
-                    <path d="M15 8h4M15 12h4M6 16h12"/>
-                </svg>
+               <img src="/static/img/icons8-utente-40.png" alt="Icona Autenticazione" class="user-image-icon">
             </div>
-            <h2>Autenticazione</h2>
+            <h2>Login</h2>
         </div>
 
         {% if error %}
@@ -56,8 +51,7 @@
         </form>
 
         <div class="card-footer-links">
-            <a href="#" class="card-link" onclick="alert('Contattare l\'amministratore di sistema per il reset password.')">Password dimenticata?</a>
-            <a href="#" class="card-link">Seleziona Unità Organizzativa</a>
+            <a href="#" class="card-link" onclick="alert('Contattare l\'amministratore di sistema per il reset password.')">Password dimenticata?</a>           
         </div>
     </div>
 </div>

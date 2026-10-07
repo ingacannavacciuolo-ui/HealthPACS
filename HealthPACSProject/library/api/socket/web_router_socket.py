@@ -3,7 +3,7 @@ from library.logger import logger
 
 router = APIRouter(tags=["WebSockets"])
 
-@router.websocket("/ws/web")
+@router.websocket("/web")
 async def websocket_web(websocket: WebSocket):
     await websocket.accept()
     logger.info("[WEB WS] Client connesso a HealthPACS Web")
