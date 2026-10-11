@@ -20,8 +20,56 @@ ROOT_STORAGE = 'ArchiveRoot'  # Nome radice archivio DICOM
 
 #COSTANTI INTERNE
 #**********************************************
-APPLICATION_NAME = 'HealthPACS'  # Nome dell'applicazione
-LOG_FILE_NAME = 'healthpacs.log'  # Nome del file di log
+APPLICATION_NAME = 'HealthPACS'
+LOG_FILE_NAME = 'healtpacs.log'
+LOG_FILE_NAME_SERVICE = 'healthpacs_service.log'  # Nome del file di log
+LOG_FILE_NAME_WEB = 'healthpacs_web.log'  # Nome del file di log
+APPLICATION_NAME_WEB = 'HealthPACSWeb'
+APPLICATION_NAME_SERVICE = 'HealthPACSService'
+
+SERVICE_STATUS = 'SERVICE_STATUS'
+SERVICE_STATUS_UPDATE = 'service_status_update'
+
+#COSTANTI DI STATO
+#****************************************
+SERVICE_STATUS_STATES = {
+    "ONLINE": 'ONLINE',
+    "OFFLINE": 'OFFLINE'
+}
+
+#COSTANTI SOCKET EVENTS
+#********************************************
+SOCKET_EVENTS = {
+    "SERVICE_STATUS_UPDATE": "service_status_update",
+    "SERVER_ALIVE": "server_alive"
+}
+
+
+#COSTANNTI SYSTEM SETTING KEY
+#*********************************************
+SESSION_DURATION_MINUTES = 'SESSION_DURATION_MINUTES'
+SERVICE_INTERNAL_AUTH_TOKEN = 'SERVICE_INTERNAL_AUTH_TOKEN'
+WEB_SOCKET_URL = 'WEB_SOCKET_URL'
+WEB_SOCKET_NAMESPACE = "WEB_SOCKET_NAMESPACE"
+DEFAULT_WEB_SOCKET_NAMESPACE = "/web"
+
+
+# COSTANTI NAMESPACE
+#*****************************************
+SOCKET_NAMESPACES = {
+    "WEB": "/socket_web",
+    "LOGIN": "/socket_login_web",
+    "SISTEMA": "/socket_sistema_web",
+    "WORKS_STUDIES": "/socket_worksstudies_web",
+    "NODI_DICOM": "/socket_nodidicom_web",
+    "SERVER_DICOM": "/socket_serverdicom_web",
+    "LOG_SISTEMA": "/socket_log_sistema_web",
+    "USERS": "/socket_users_web",
+    "QUERY_STUDIES": "/socket_query_studies_web",
+    "QUERY_FOLDER_STUDIES": "/socket_queryfolderstudies_web",
+    "WORKS_STUDIES_FOLDER": "/socket_worksstudiesfolder_web"
+}
+
 
 #CONSTANTS DICOM
 #*********************************************

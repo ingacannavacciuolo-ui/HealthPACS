@@ -3,13 +3,23 @@ import sys
 import signal
 import threading
 import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from library.dbmanager import DatabaseManager
-from library.logger import logger, setup_logger_file
+from library.logger import HealthPACSLogger
 from library.repository.container import RepositoryContainer
-from library.api import pages_router, web_router_socket
+from library.api import pages_router, sio_app, init_socket_receiver
+from library.constant_health_pacs import LOG_FILE_NAME_WEB, APPLICATION_NAME_WEB
+
+
+
+# 1. Istanziazione isolata del logger per HealthPACSWeb
+web_logger_instance = HealthPACSLogger(
+    app_name=APPLICATION_NAME_WEB, 
+    log_filename=LOG_FILE_NAME_WEB
+)
+logger = web_logger_instance.get_logger()
 
 
 shutdown_event = threading.Event()
@@ -28,6 +38,9 @@ def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> Fa
     app.state.dbmanager = dbmanager
     app.state.repos = repos
 
+    # Inizializza il ricevitore Socket.IO della Web App
+    init_socket_receiver(dbmanager)
+
     # 1. Configurazione della cartella STATIC per CSS, JS e risorse grafiche
     base_path = (
         getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
@@ -41,7 +54,9 @@ def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> Fa
 
     # 2. Registrazione del router per le pagine HTML (Login e Base)
     app.include_router(pages_router)
-    app.include_router(web_router_socket)
+
+    #4. Monta l'app Socket.IO su FastAPI
+    app.mount("/socket.io", sio_app)
 
     return app
 
@@ -51,8 +66,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    try:
-        setup_logger_file("healthpacs_web.log")
+    try:       
         logger.info("Inizializzazione HealthPACS Web Server (FastAPI/Uvicorn)...")
 
         dbmanager = DatabaseManager()
@@ -67,7 +81,7 @@ def main():
         host = "0.0.0.0"
         port = 5000 # Deve caricarla da database
 
-        config = uvicorn.Config(app=app, host=host, port=port, log_level="info") # il level_log deve caricarlo da datab
+        config = uvicorn.Config(app=app, host=host, port=port, log_level=None) # il level_log deve caricarlo da datab
         server = uvicorn.Server(config)
 
         logger.info(f"Avvio HealthPACS Web Server su http://{host}:{port}")

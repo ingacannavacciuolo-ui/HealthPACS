@@ -5,16 +5,28 @@ import sys
 from fastapi import APIRouter, Request, Form, Response, Depends, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from library.constant_health_pacs import SOCKET_NAMESPACES, SOCKET_EVENTS, SERVICE_STATUS_STATES
 
 from library.services.auth_service import AuthService
 from library.api.web.dependencies import get_auth_service, get_current_user_session
 
 router = APIRouter(tags=["Web Pages"])
 
-# Risale dal folder library/api/web fino alla radice per trovare templates/
-base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__))) if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
-templates_dir = os.path.abspath(os.path.join(base_path, "..", "..", "..", "templates"))
+# Determinazione della cartella templates
+if getattr(sys, 'frozen', False):
+    # In modalità compilata (PyInstaller), la cartella templates si trova nella radice di sys._MEIPASS
+    templates_dir = os.path.join(sys._MEIPASS, "templates")
+else:
+    # In modalità sviluppo (.py), risale da library/api/web fino alla radice del progetto
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    templates_dir = os.path.abspath(os.path.join(base_path, "..", "..", "..", "templates"))
+
 templates = Jinja2Templates(directory=templates_dir)
+
+# Registrazione globale delle costanti per tutti i template HTML
+templates.env.globals["SOCKET_NAMESPACES"] = SOCKET_NAMESPACES
+templates.env.globals["SOCKET_EVENTS"] = SOCKET_EVENTS
+templates.env.globals["SERVICE_STATUS_STATES"] = SERVICE_STATUS_STATES
 
 
 @router.get("/", response_class=HTMLResponse)

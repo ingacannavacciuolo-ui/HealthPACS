@@ -111,14 +111,7 @@ class DicomServer:
         # CONFIGURAZIONE DEBUG LOGGING PYNETDICOM -> HealthPACS
         # -------------------------------------------------------------
         setup_pynetdicom_logging()
-        pynetdicom_logger = logging.getLogger("pynetdicom")
-        pynetdicom_logger.setLevel(logging.DEBUG)
-
-        # Evita di aggiungere duplicate handler se il metodo viene richiamato
-        pynetdicom_logger.handlers.clear()
-
-        for handler in logger.handlers:
-            pynetdicom_logger.addHandler(handler)
+       
         # -------------------------------------------------------------
         ae_title = self.config_scp.get("ae_title")
         if not ae_title:

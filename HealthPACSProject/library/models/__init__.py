@@ -1,4 +1,5 @@
 from .base_model import Base
+from .app_notification_worker_model import AppNotificationWorkerModel
 from .app_system_settings_model import AppSystemSettingsModel
 from .app_users_model import AppUsersModel
 from .app_users_permissions_model import AppUsersPermissionsModel
@@ -18,6 +19,7 @@ from .transfer_syntax_uid_model import TransferSyntaxUidModel
 
 __all__ = [
     "Base",
+    "AppNotificationWorkerModel",
     "AppSystemSettingsModel",
     "AppUsersModel",
     "AppUsersPermissionsModel",

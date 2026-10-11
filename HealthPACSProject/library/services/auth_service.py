@@ -8,6 +8,7 @@ from library.logger import logger
 from library.repository import AppUsersRepo
 from library.repository import AppUsersSessionsRepo
 from library.repository import AppSystemSettingsRepo
+from library.constant_health_pacs import SESSION_DURATION_MINUTES
 
 
 class AuthService:
@@ -26,13 +27,13 @@ class AuthService:
         Fallback a 30 minuti in caso di errore o valore mancante.
         """
         val_str = self.settings_repo.get_setting_value(
-            "session_duration_minutes", default_value="480"
+            SESSION_DURATION_MINUTES, default_value="480"
         )
         try:
             return int(val_str)
         except (ValueError, TypeError):
             logger.warning(
-                f"AuthService: Valore non valido per 'session_duration_minutes' ('{val_str}'). Uso fallback a 30m."
+                f"AuthService: Valore non valido per ({SESSION_DURATION_MINUTES}): ('{val_str}'). Uso fallback a 30m."
             )
             return 30
 
