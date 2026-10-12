@@ -5,7 +5,7 @@ import sys
 from fastapi import APIRouter, Request, Form, Response, Depends, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from library.constant_health_pacs import SOCKET_NAMESPACES, SOCKET_EVENTS, SERVICE_STATUS_STATES
+from library.constant_health_pacs import SOCKET_NAMESPACES, SOCKET_EVENTS, SERVICE_STATUS_STATES,SEVERITY
 
 from library.services.auth_service import AuthService
 from library.api.web.dependencies import get_auth_service, get_current_user_session
@@ -27,7 +27,7 @@ templates = Jinja2Templates(directory=templates_dir)
 templates.env.globals["SOCKET_NAMESPACES"] = SOCKET_NAMESPACES
 templates.env.globals["SOCKET_EVENTS"] = SOCKET_EVENTS
 templates.env.globals["SERVICE_STATUS_STATES"] = SERVICE_STATUS_STATES
-
+templates.env.globals["SEVERITY"] = SEVERITY
 
 @router.get("/", response_class=HTMLResponse)
 async def login_page(request: Request, auth_service: AuthService = Depends(get_auth_service)):

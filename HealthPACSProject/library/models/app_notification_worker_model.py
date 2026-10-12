@@ -8,6 +8,7 @@ class AppNotificationWorkerModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     notify_key = Column(String(100), unique=True, nullable=False, index=True)
     notify_type = Column(String(50), nullable=False)
+    severity = Column(String(20), default="INFO", nullable=False)  # <-- NUOVO CAMPO
     notify_description = Column(Text, nullable=True)
     permanent = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=False, nullable=False)

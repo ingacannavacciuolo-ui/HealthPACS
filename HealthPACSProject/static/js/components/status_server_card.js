@@ -10,7 +10,7 @@ const ServerStatusCard = {
     init() {
         this.cardEl = document.getElementById('server-status-card');
         this.textEl = document.getElementById('server-status-text');
-        this.setDisconnected(); // Stato iniziale obbligatorio
+        //this.setDisconnected(); // Stato iniziale obbligatorio
 
         // Avvia la connessione Socket autonoma
         this.initSocket();

@@ -5,10 +5,13 @@ from typing import Dict, Any
 from library.logger import logger
 from library.constant_health_pacs import (
     SERVICE_STATUS,
-    WEB_SOCKET_NAMESPACE,
     SERVICE_STATUS_STATES,
     SOCKET_NAMESPACES,
     SOCKET_EVENTS,
+    NOTIFY_KEY,
+    NOTIFY_TYPE,
+    SEVERITY,
+    APPLICATION_NAME_SERVICE
 )
 from library.repository import AppSystemSettingsRepo
 
@@ -39,101 +42,89 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
     def __init__(self, db_manager):
         self.dbmanager = db_manager
         self.namespace = SOCKET_NAMESPACES["WEB"]
+        self.service_sid = None  # Memorizza il SID di HealthPACSService
         super().__init__(self.namespace)
 
-    '''def _load_namespace_from_db(self) -> str:
-        """Carica il namespace dal DB usando AppSystemSettingsRepo."""
-        if not self.dbmanager:
-            logger.error("[WEB SOCKET] Impossibile accedere al DB: db_manager non disponibile.")
-            return "/web"
-
-        try:
-            repo = AppSystemSettingsRepo(self.dbmanager)
-            ns = repo.get_setting_value(WEB_SOCKET_NAMESPACE, default_value="/web")
-            if not ns.startswith("/"):
-                ns = f"/{ns}"
-            logger.info(f"[WEB SOCKET] Namespace caricato da DB: {WEB_SOCKET_NAMESPACE} = '{ns}'")
-            return ns
-        except Exception as e:
-            logger.error(f"[WEB SOCKET] Errore lettura namespace da DB, uso fallback '/web': {e}")
-            return "/web"'''
+   
 
     async def on_connect(self, sid, environ):
-        # Log generico e corretto per chiunque si connetta (Browser o Service)
-        logger.info(f"[WEB SOCKET RECEIVER] Nuova connessione socket client [sid: {sid}] sul namespace '{self.namespace}'")
-
-        # Calcoliamo lo stato reale verificando se l'ultimo heartbeat del Service è recente
-        now = time.time()
-        timeout_threshold = 45  # Tolleranza su 3 cicli di heartbeat (15s * 3)
-
-        # Se l'ultimo heartbeat è recente E lo stato salvato era ONLINE, inviamo ONLINE
-        if status_state.last_heartbeat > 0 and (now - status_state.last_heartbeat) < timeout_threshold and status_state.status == SERVICE_STATUS_STATES['ONLINE']:
-            current_status = SERVICE_STATUS_STATES['ONLINE']
-            msg = "HealthPACSService è operativo"
-        else:
-            current_status = SERVICE_STATUS_STATES['OFFLINE']
-            msg = "HealthPACSService non raggiungibile"
+        logger.info(f"[WEB SOCKET RECEIVER] Nuova connessione client [sid: {sid}]")
         
-        # Risponde subito inviando lo stato REALE memorizzato nel server (es. OFFLINE se il service è giù)
+        # Verifichiamo se l'ultimo heartbeat è recente (es. ultimi 45 secondi)
+        now = time.time()
+        is_alive = (
+            status_state.last_heartbeat > 0 
+            and (now - status_state.last_heartbeat) < 45 
+            and status_state.status == SERVICE_STATUS_STATES['ONLINE']
+        )
+        
+        current_status = SERVICE_STATUS_STATES['ONLINE'] if is_alive else SERVICE_STATUS_STATES['OFFLINE']
+
+        # Risponde SOLO al browser appena connesso con lo stato reale freschissimo
         await self.emit(
             SOCKET_EVENTS["SERVICE_STATUS_UPDATE"],
             {
-                "type": SERVICE_STATUS,
                 "status": current_status,
-                "message": msg
+                "message": "Stato corrente del servizio PACS"
             },
             to=sid
         )
 
     async def on_message(self, sid, data: Dict[str, Any]):
-        """
-        Dispatcher principale: analizza il campo 'type' ed esegue l'handler dedicato.
-        """
         if not isinstance(data, dict):
-            logger.warning(f"[WEB SOCKET RECEIVER] Payload non valido ricevuto da [sid: {sid}]: {data}")
+            return
+        
+        # Registra il SID solo se il mittente è il servizio backend
+        if data.get("sender") != APPLICATION_NAME_SERVICE:
             return
 
+        self.service_sid = sid
         msg_type = data.get("type")
-        logger.info(f"[WEB SOCKET RECEIVER] Notifica ricevuta [{msg_type}] da [sid: {sid}]")
+        severity = str(data.get("severity", "")).upper()
 
-        # Routing in base al tipo di notifica
-        # Notifica la web che il sistema service è alive
+        # Se si tratta dello stato del servizio, lo gestiamo tramite il tipo
         if msg_type == SERVICE_STATUS:
             await self._handle_service_status(data)
 
-          
+        # Routing basato interamente sulla SEVERITY
+        elif severity == SEVERITY["CRITICAL"]:
+            await self._handle_severity_critical(data)
+
+        elif severity == SEVERITY["WARNING"]:
+            await self._handle_severity_warning(data)
+
+        elif severity == SEVERITY["INFO"]:
+            await self._handle_severity_info(data)
 
         else:
-            logger.warning(f"[WEB SOCKET RECEIVER] Tipo notifica non gestito: '{msg_type}'")
-            # Inoltro generico di fallback a eventuali client web connessi
             await self.emit("GENERIC_NOTIFICATION", data)
-
-    
-    '''elif msg_type == DICOM_JOB_STATUS:
-                await self._handle_dicom_job_status(data)
-
-            elif msg_type == STORAGE_ALERT:
-                await self._handle_storage_alert(data)
-
-            elif msg_type == WORKLIST_SYNC:
-                await self._handle_worklist_sync(data)'''
-    
+        
 
     async def on_disconnect(self, sid):
-        logger.warning(f"[WEB SOCKET RECEIVER] HealthPACSService disconnesso [sid: {sid}] dal namespace '{self.namespace}'")
-        status_state.status = SERVICE_STATUS_STATES['OFFLINE']
+        # SOLTANTO se a disconnettersi è il vero Service impostiamo OFFLINE e notifichiamo a tutti!
+        if sid == self.service_sid:
+            logger.warning(f"[WEB SOCKET RECEIVER] HealthPACSService disconnesso [sid: {sid}]")
+            self.service_sid = None
+            status_state.status = SERVICE_STATUS_STATES['OFFLINE']
 
-        # Notifica la caduta della connessione del servizio ai client/browser
-        await self.emit(
-            SOCKET_EVENTS["SERVICE_STATUS_UPDATE"],
-            {
-                "type": SERVICE_STATUS,
-                "status": SERVICE_STATUS_STATES['OFFLINE'],
-                "message": "Connessione con HealthPACSService interrotta.",
-                "timestamp": time.time(),
-            }
-        )
+            await self.emit(
+                SOCKET_EVENTS["SERVICE_STATUS_UPDATE"],
+                {
+                    "type": SERVICE_STATUS,
+                    "status": SERVICE_STATUS_STATES['OFFLINE'],
+                    "message": "Connessione con HealthPACSService interrotta.",
+                    "timestamp": time.time(),
+                }
+            )
+        else:
+            # Se è la disconnessione di un browser (F5/Refresh), ignoriamo silenziosamente
+            logger.info(f"[WEB SOCKET RECEIVER] Browser disconnesso [sid: {sid}] (nessun impatto sullo stato)")
 
+   
+   
+   
+   
+   
     # --- HANDLER DEDICATI PER TIPOLOGIA ---
 
     async def _handle_service_status(self, data: Dict[str, Any]):
@@ -142,8 +133,91 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         status_state.status = data.get("status", SERVICE_STATUS_STATES['OFFLINE'])
 
         logger.info(f"[STATUS HANDLER] Service status: {status_state.status} | Msg: {data.get('message')}")
-       
+        # EMIT verso il client Web (es. sul namespace LOGIN o SISTEMA)
+        await sio.emit(
+            SOCKET_EVENTS["SERVICE_STATUS_UPDATE"], 
+            {
+                'status': status_state.status,
+                'message': data.get('message', '')
+            }, 
+            namespace=self.namespace  # oppure SISTEMA
+        )
         await self.emit(SOCKET_EVENTS["SERVICE_STATUS_UPDATE"], data)
+
+        
+
+    async def _handle_severity_critical(self, data: Dict[str, Any]):
+        """Gestisce avvisi critici (CRITICAL)."""
+        notify_key = data.get("notify_key", "UNKNOWN_KEY")
+        message = data.get("message", "Nessun dettaglio fornito")
+
+        logger.warning(f"[CRITICAL ALERT] Key: {notify_key} | Msg: {message}")
+
+        # Emette sul canale socket dedicato 'CRITICAL'
+        await self.emit(SEVERITY["CRITICAL"], data)
+
+
+
+    async def _handle_severity_warning(self, data: Dict[str, Any]):
+        """Gestisce avvisi di avvertimento (WARNING)."""
+        notify_key = data.get("notify_key", "UNKNOWN_KEY")
+        message = data.get("message", "Nessun dettaglio fornito")
+
+        logger.warning(f"[WARNING ALERT] Key: {notify_key} | Msg: {message}")
+
+        # Emette sul canale socket dedicato 'WARNING'
+        await self.emit(SEVERITY["WARNING"], data)
+
+
+
+
+    async def _handle_severity_info(self, data: Dict[str, Any]):
+        """Gestisce avvisi informativi (INFO)."""
+        notify_key = data.get("notify_key", "UNKNOWN_KEY")
+        message = data.get("message", "Nessun dettaglio fornito")
+
+        logger.info(f"[INFO ALERT] Key: {notify_key} | Msg: {message}")
+
+        # Emette sul canale socket dedicato 'INFO'
+        await self.emit(SEVERITY["INFO"], data)
+
+
+
+
+    '''async def _handle_severity_warning(self, data: Dict[str, Any]):
+        """Gestisce avvisi di avvertimento (WARNING)."""
+        notify_type = data.get("type", "UNKNOWN_TYPE")
+        notify_key = data.get("notify_key", "UNKNOWN_KEY")
+        severity = data.get("severity", "WARNING")
+        message = data.get("message", "Nessun dettaglio fornito")
+        permanent = data.get("permanent", False)
+        is_active = data.get("is_active", True)
+
+        logger.warning(
+            f"[WARNING ALERT] [{notify_type}] Key: {notify_key} | Severity: {severity} | "
+            f"Permanent: {permanent} | Active: {is_active} | Msg: {message}"
+        )
+
+        # Invia il payload completo via socket ai client connessi
+        await self.emit("SYSTEM_ALERT", data)
+
+
+    async def _handle_severity_info(self, data: Dict[str, Any]):
+        """Gestisce avvisi informativi (INFO)."""
+        notify_type = data.get("type", "UNKNOWN_TYPE")
+        notify_key = data.get("notify_key", "UNKNOWN_KEY")
+        severity = data.get("severity", "INFO")
+        message = data.get("message", "Nessun dettaglio fornito")
+        permanent = data.get("permanent", False)
+        is_active = data.get("is_active", True)
+
+        logger.info(
+            f"[INFO ALERT] [{notify_type}] Key: {notify_key} | Severity: {severity} | "
+            f"Permanent: {permanent} | Active: {is_active} | Msg: {message}"
+        )
+
+        # Invia il payload completo via socket ai client connessi
+        await self.emit("SYSTEM_ALERT", data)
 
     async def _handle_dicom_job_status(self, data: Dict[str, Any]):
         """Gestisce lo stato di elaborazione/ricezione/invio di uno studio DICOM."""
@@ -155,19 +229,36 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         # Inoltra in broadcast l'aggiornamento alla Dashboard/Interfaccia Web
         await self.emit("DICOM_JOB_UPDATE", data)
 
-    async def _handle_storage_alert(self, data: Dict[str, Any]):
-        """Gestisce avvisi di spazio in esaurimento o errori sui dischi PACS."""
-        severity = data.get("severity", "WARNING")
-        free_gb = data.get("free_gb")
 
-        logger.warning(f"[STORAGE ALERT] Livello: {severity} | Spazio residuo: {free_gb} GB")
-        await self.emit("SYSTEM_ALERT", data)
+
+    async def _handle_sistem_alert(self, data: Dict[str, Any]):
+        """Gestisce avvisi di spazio in esaurimento o errori sui dischi PACS."""
+        notify_type = data.get("type", NOTIFY_TYPE["SYSTEM_ALERT"])
+        notify_key = data.get("notify_key", "UNKNOWN_KEY")
+        severity = data.get("severity", "WARNING")
+        message = data.get("message", "Nessun dettaglio fornito")
+        permanent = data.get("permanent", False)
+        is_active = data.get("is_active", True)
+
+        logger.warning(
+            f"[{notify_type}] Key: {notify_key} | Severity: {severity} | "
+            f"Permanent: {permanent} | Active: {is_active} | Msg: {message}"
+        )
+
+        # Invia il payload completo via socket ai client connessi
+        await self.emit(notify_type, data)
+
+
+
 
     async def _handle_worklist_sync(self, data: Dict[str, Any]):
         """Gestisce notifiche di sincronizzazione Worklist Modality."""
         synced_items = data.get("synced_count", 0)
         logger.info(f"[WORKLIST HANDLER] Sincronizzati {synced_items} elementi Modality Worklist.")
-        await self.emit("WORKLIST_UPDATE", data)
+        await self.emit("WORKLIST_UPDATE", data)'''
+
+
+
 
 
 def init_socket_receiver(db_manager) -> HealthPACSWebReceiverSocket:

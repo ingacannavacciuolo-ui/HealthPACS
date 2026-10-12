@@ -1,10 +1,27 @@
+"""
+Modulo per il monitoraggio continuativo delle risorse di sistema.
+
+Il worker `system_monitor_worker` opera in background e si occupa di:
+- Raccogliere e tracciare metriche hardware/sistema in tempo reale (CPU, RAM, 
+  disco, rete, processi).
+- Registrare i log di performance ed evidenziare eventuali anomalie o utilizzi critici.
+- Inviare o salvare i dati aggregati per la visualizzazione in dashboard o dashboard alert.
+"""
+"""Module for continuous system resource monitoring.
+
+The `system_monitor_worker` background worker performs the following tasks:
+- Collects and tracks real-time hardware and system metrics (CPU, RAM,
+  disk, network, processes).
+- Logs performance metrics and flags anomalies or critical utilization levels.
+- Sends or saves aggregated data for display in dashboards or alert systems.
+"""
 import time
 import logging
 import threading
 from typing import Any
 
 from library.repository.app_notification_worker_repo import AppNotificationWorkerRepo
-from library.constant_health_pacs import SERVICE_STATUS, SERVICE_STATUS_STATES
+from library.constant_health_pacs import SERVICE_STATUS, SERVICE_STATUS_STATES, APPLICATION_NAME_SERVICE
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +58,9 @@ def start_system_monitor_worker(
                 # 1. EMISSIONE HEARTBEAT
                 service_socket.send_notification({
                     "type": SERVICE_STATUS,
-                    "sender": "HealthPACSService",
+                    "sender": APPLICATION_NAME_SERVICE,
                     "status": SERVICE_STATUS_STATES["ONLINE"],
-                    "message": "HealthPACSService is ALIVE",
+                    "message": APPLICATION_NAME_SERVICE + " is ALIVE",
                     "timestamp": time.time()
                 })
 
@@ -57,10 +74,12 @@ def start_system_monitor_worker(
                             logger.info(f"[SYSTEM MONITOR] Invio notifica socket per evento: '{event.notify_key}'")
                             
                             sent_success = service_socket.send_notification({
+                                "sender": APPLICATION_NAME_SERVICE,
                                 "type": event.notify_type,
                                 "notify_key": event.notify_key,
                                 "message": event.notify_description,
                                 "permanent": event.permanent,
+                                "severity": event.severity,
                                 "is_active": True,
                                 "timestamp": time.time()
                             })

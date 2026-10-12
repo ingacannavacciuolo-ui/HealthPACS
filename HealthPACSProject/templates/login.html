@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="stylesheet" href="/static/css/components/login_card.css">
     <link rel="stylesheet" href="/static/css/components/status_server_card.css">
+    <link rel="stylesheet" href="/static/css/components/alert_server_card.css">
     
     <!-- Librerie esterne e Configurazione Globale dell'App -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -15,6 +16,7 @@
         const SOCKET_NAMESPACES = Object.freeze(JSON.parse('{{ SOCKET_NAMESPACES | tojson | safe }}'));
         const SOCKET_EVENTS = Object.freeze(JSON.parse('{{ SOCKET_EVENTS | tojson | safe }}'));
         const SERVICE_STATUS_STATES = Object.freeze(JSON.parse('{{ SERVICE_STATUS_STATES | tojson | safe }}'));
+        const SEVERITY = Object.freeze(JSON.parse('{{ SEVERITY | tojson | safe }}'));        
     </script>
 </head>
 <body>
@@ -38,8 +40,23 @@
             </div>
         </header>
 
-        <div class="page-title">
-            ACCESSO SISTEMA ARCHIVIAZIONE IMMAGINI (PACS)
+        <!-- SEZIONE TITOLO CON CONTENITORI ALLERTE IN OVERLAY A SINISTRA -->
+        <div class="title-section-wrapper">
+            <!-- Contenitore unico per le allerte (posizionato in absolute a sinistra) -->
+            <div class="alerts-overlay-left">
+                <div id="container-critical-alerts" class="alerts-stack-container"></div>
+                <div id="container-warning-alerts" class="alerts-stack-container"></div>
+            </div>
+
+            <!-- Titolo principale (rimane centrato e immobile) -->
+            <div class="page-title">
+                ACCESSO SISTEMA ARCHIVIAZIONE IMMAGINI (PACS)
+            </div>
+
+            <!-- Overlay Destro: INFO -->
+            <div class="alerts-overlay-right">
+                <div id="container-info-alerts" class="alerts-stack-container"></div>
+            </div>
         </div>
 
         <main class="main-content-centered">
@@ -48,13 +65,14 @@
             </div>
 
             <div class="right-panel">
-                <!-- Spazio per notifiche / immagini PACS -->
+               <!-- Spazio libero per il pannello di destra -->
             </div>
         </main>
     </div>
 
     <!-- Librerie esterne -->    
     <script src="/static/js/components/status_server_card.js"></script>
+    <script src="/static/js/components/alert_server_card.js"></script>
     <script src="/static/js/components/login_card.js"></script>
     <script src="/static/js/login.js"></script>
 </body>

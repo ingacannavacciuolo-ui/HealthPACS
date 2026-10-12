@@ -21,27 +21,47 @@ class AppNotificationWorkerRepo:
     def get_pending_socket_notifications(self) -> List[AppNotificationWorkerModel]:
         """
         Usato dal WORKER SOCKET:
-        Recupera le notifiche scattate che devono essere ancora inviate via socket (is_active=True, is_sent=False).
+        Recupera le notifiche scattate o aggiornate che devono essere ancora inviate via socket (is_active=True, is_sent=False).
         """
         return self.session.query(AppNotificationWorkerModel).filter_by(
             is_active=True,
             is_sent=False
         ).all()
 
-    def trigger_alert(self, notify_key: str, description: Optional[str] = None) -> bool:
+    def trigger_alert(
+        self, 
+        notify_key: str, 
+        description: Optional[str] = None, 
+        severity: Optional[str] = None
+    ) -> bool:
         """
-        Attiva un evento precaricato impostando is_active=True e is_sent=False.
-        Restituisce True se lo stato è cambiato.
+        Attiva o aggiorna un evento impostando is_active=True e is_sent=False.
+        Se l'evento è già attivo ma la descrizione cambia, forza il reinvio (is_sent=False).
         """
         notif = self.get_by_key(notify_key)
         if notif:
+            state_changed = False
+
+            # Se l'allarme era spento, lo attiviamo
             if not notif.is_active:
                 notif.is_active = True
-                notif.is_sent = False
-                if description:
-                    notif.notify_description = description
+                state_changed = True
+
+            # Se la descrizione o la severity cambiano, aggiorniamo il record
+            if description and notif.notify_description != description:
+                notif.notify_description = description
+                state_changed = True
+
+            if severity and getattr(notif, "severity", None) != severity:
+                notif.severity = severity
+                state_changed = True
+
+            # Se c'è stato un qualsiasi cambiamento o l'evento deve essere reinviato
+            if state_changed or notif.is_sent:
+                notif.is_sent = False  # Forza il worker a reinviare la notifica aggiornata via socket
                 self.session.commit()
                 return True
+
         return False
 
     def resolve_alert(self, notify_key: str) -> bool:

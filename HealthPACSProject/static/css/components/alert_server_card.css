@@ -1,0 +1,146 @@
+/* --- BASE CARD --- */
+.alert-card-tech {
+    background-color: #1a1c23;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #ffffff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-width: 320px;
+    max-width: 420px;
+}
+
+.alert-content {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.alert-message {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 6px;
+    color: #ffffff;
+}
+
+.alert-close-btn {
+    background: transparent;
+    border: none;
+    color: #a0aec0;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: 8px;
+    padding: 0 4px;
+}
+
+.alert-close-btn:hover {
+    color: #ffffff;
+}
+
+/* --- ICONA NEON DALLA CLASS CSS --- */
+.alert-icon {
+    width: 32px;
+    height: 32px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* --- VARIANTI SEVERITY (Icone + Prefissi + Colori) --- */
+
+/* CRITICAL */
+.alert-card-tech.critical {
+    border: 1.5px solid #ff4d4d;
+    box-shadow: 0 0 12px rgba(255, 77, 77, 0.35);
+}
+.alert-card-tech.critical .alert-icon {
+    /* SVG Campana Medica CRITICAL */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23ff4d4d" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7v4.29l-1.7 1.7A1 1 0 004 17h16a1 1 0 00.7-1.71L19 13.29V9a7 7 0 00-7-7zm-1 5h2v2h2v2h-2v2h-2v-2H9V9h2V7zm1 15a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22z"/></svg>');
+    filter: drop-shadow(0 0 6px rgba(255, 77, 77, 0.8));
+}
+.alert-prefix::before {
+    font-weight: 700;
+}
+.alert-card-tech.critical .alert-prefix::before {
+    content: "ALERT:";
+    color: #ff4d4d;
+}
+
+/* WARNING */
+.alert-card-tech.warning {
+    border: 1.5px solid #ffb020;
+    box-shadow: 0 0 12px rgba(255, 176, 32, 0.35);
+}
+.alert-card-tech.warning .alert-icon {
+    /* SVG Campana WARNING */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23ffb020" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7v4.29l-1.7 1.7A1 1 0 004 17h16a1 1 0 00.7-1.71L19 13.29V9a7 7 0 00-7-7zm0 20a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22z"/></svg>');
+    filter: drop-shadow(0 0 6px rgba(255, 176, 32, 0.8));
+}
+.alert-card-tech.warning .alert-prefix::before {
+    content: "AVVISO:";
+    color: #ffb020;
+}
+
+/* INFO */
+.alert-card-tech.info {
+    border: 1.5px solid #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+.alert-card-tech.info .alert-icon {
+    /* SVG Campana INFO */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%2338bdf8" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7v4.29l-1.7 1.7A1 1 0 004 17h16a1 1 0 00.7-1.71L19 13.29V9a7 7 0 00-7-7zm0 20a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22z"/></svg>');
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+}
+.alert-card-tech.info .alert-prefix::before {
+    content: "INFO:";
+    color: #38bdf8;
+}
+
+/* Container della sezione titolo (mantiene il titolo centrato ed è il riferimento assoluto) */
+.title-section-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Usiamo min-height per garantire un'altezza stabile e calcolabile */
+    min-height: 48px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* Contenitore delle allerte agganciato a sinistra all'altezza del titolo */
+.alerts-overlay-left {
+    position: absolute;
+    left: 24px;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 340px;
+    z-index: 40;
+}
+
+/* Contenitore Destro (INFO) */
+.alerts-overlay-right {
+    position: absolute;
+    right: 24px;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 340px;
+    z-index: 40;
+}
+
+.alerts-stack-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
