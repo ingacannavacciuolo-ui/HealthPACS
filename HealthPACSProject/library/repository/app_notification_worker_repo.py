@@ -16,7 +16,7 @@ class AppNotificationWorkerRepo:
         Usato al LOGIN / Refresh dell'utente:
         Recupera tutte le notifiche attualmente attive nel sistema.
         """
-        return self.session.query(AppNotificationWorkerModel).filter_by(is_active=True).all()
+        return self.session.query(AppNotificationWorkerModel).filter_by(is_active=True, is_sent=True).all()
 
     def get_pending_socket_notifications(self) -> List[AppNotificationWorkerModel]:
         """

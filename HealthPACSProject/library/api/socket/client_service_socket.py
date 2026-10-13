@@ -12,6 +12,7 @@ from library.repository import AppSystemSettingsRepo
 from library.constant_health_pacs import (
     WEB_SOCKET_URL,
     SOCKET_NAMESPACES,
+    HEALT_PACS_WEB_URL_DEFAULT
 )
 
 
@@ -45,7 +46,7 @@ class HealthPACSServiceClientSocket:
 
         @self.sio.event(namespace=self.namespace)
         def connect():
-            logger.info("[SERVICE SOCKET] Connessione fissa stabilita con HealthPACSWeb!")
+            logger.info("[SERVICE SOCKET] Connessione socket notifiche stabilita con HealthPACSWeb!")
             self.is_connected_event.set()
             self._flush_buffer()
 
@@ -61,12 +62,12 @@ class HealthPACSServiceClientSocket:
 
     def load_config_from_db(self) -> bool:
         if not self.dbmanager:
-            logger.error("[SERVICE SOCKET] Impossibile accedere al DB: db_manager non disponibile.")
+            logger.error("[SERVICE SOCKET] Impossibile accedere al database: db_manager non disponibile.")
             return False
 
         try:
             repo = AppSystemSettingsRepo(self.dbmanager)
-            url_from_db = repo.get_setting_value(WEB_SOCKET_URL, default_value="http://localhost:5000")
+            url_from_db = repo.get_setting_value(WEB_SOCKET_URL, default_value=HEALT_PACS_WEB_URL_DEFAULT)
             if url_from_db.startswith("ws://"):
                 url_from_db = url_from_db.replace("ws://", "http://")
             elif url_from_db.startswith("wss://"):
@@ -75,8 +76,8 @@ class HealthPACSServiceClientSocket:
             self.web_ws_url = url_from_db
             logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {WEB_SOCKET_URL} = '{self.web_ws_url}'")
 
-            # 2. Caricamento Namespace dal DB
-            self.namespace = SOCKET_NAMESPACES["WEB"]#repo.get_setting_value(WEB_SOCKET_NAMESPACE, default_value=DEFAULT_WEB_SOCKET_NAMESPACE)
+            # 2. Settaggio Namespace socket
+            self.namespace = SOCKET_NAMESPACES["WEB"]
             logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {SOCKET_NAMESPACES["WEB"]} = '{self.namespace}'")
 
             # REGISTRIAMO GLI EVENTI ORA CHE IL NAMESPACE È NOTO!

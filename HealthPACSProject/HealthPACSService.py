@@ -96,52 +96,7 @@ def start_service_socket_client(dbmanager: DatabaseManager) -> HealthPACSService
 
     return client_socket
 
-'''def start_heartbeat_worker(
-    service_socket: HealthPACSServiceClientSocket, 
-    fast_interval: int = 5,
-    normal_interval: int = 30
-) -> threading.Thread:
-    """
-    Avvia un thread daemon che invia un heartbeat periodico verso HealthPACSWeb.
-    Usa 'fast_interval' se disconnesso o in fase di handshaking, 
-    e passa a 'normal_interval' quando la connessione è attiva.
-    """
-    
-    def heartbeat_loop():
-        logger.info(
-            f"[HEARTBEAT] Worker avviato (Intervallo dinamico: {fast_interval}s in retry / {normal_interval}s a regime)"
-        )
-        
-        while not shutdown_event.is_set():
-            # Verifichiamo lo stato di connessione reale dell'oggetto Client di Socket.IO
-            # (tramite il gestore interno o la proprietà sio.connected)
-            is_connected = False
-            if hasattr(service_socket, "sio") and service_socket.sio:
-                is_connected = getattr(service_socket.sio, "connected", False)
-            elif hasattr(service_socket, "is_connected"):
-                is_connected = getattr(service_socket, "is_connected", False)
 
-            if is_connected:
-                # La connessione di rete è reale: inviamo l'heartbeat e programmiamo l'attesa lunga
-                service_socket.send_notification({
-                    "type": SERVICE_STATUS,
-                    "sender": "HealthPACSService",
-                    "status": SERVICE_STATUS_STATES["ONLINE"],
-                    "message": "HealthPACSService is ALIVE (Heartbeat)",
-                    "timestamp": time.time()
-                })
-                current_wait = normal_interval
-            else:
-                # Non ancora connesso: non intasiamo la coda e riproviamo a breve
-                logger.debug(f"[HEARTBEAT] Socket non ancora connesso. Prossimo controllo tra {fast_interval}s...")
-                current_wait = fast_interval
-
-            # Attesa non bloccante
-            shutdown_event.wait(timeout=current_wait)
-
-    thread = threading.Thread(target=heartbeat_loop, name="HeartbeatThread", daemon=True)
-    thread.start()
-    return thread'''
 
 
 def main():
@@ -169,26 +124,31 @@ def main():
         # 4. Inizializzazione del Container dei Repository
         repos = RepositoryContainer(dbmanager)
 
-        # 5. Avvio del Server DICOM (SCP)
-        dicom_server = start_dicom_server(dbmanager, repos)        
-
-        # 8. Avvio opzionale dell'API REST / WebSocket
-        app = create_fastapi_app(dbmanager, repos)
-        api_server = start_api_server(app, host="0.0.0.0", port=8000)
-        
-        # 7. Avvio del Client Socket per le notifiche verso HealthPACSWeb
+        # 5. Avvio del Client Socket per la connessione verso
+        #    "web_receiver_socket" necessaria all'invio delle
+        #    notifiche recuperate da "start_system_monitor_worker"
         service_socket = start_service_socket_client(dbmanager)
 
-        # 8. Avvio del worker dedicato per l'Heartbeat periodico
-        #start_heartbeat_worker(service_socket,fast_interval=5 ,normal_interval=30)
-
-        # 9. NUOVO: Avvio del worker per il dispatching delle notifiche da DB
+        # 6. Avvio del worker per il dispatching delle notifiche da DB.
+        #    Recupera dalla tabella "app_notification_worker" le notifiche 
+        #    con stato attivo e le manda al WEB tramite la connesione socket
+        #    effettuata da "client_service_socket"
+        #    Essendo legato allo shutdown_event, si chiude da solo alla chiusura
+        #    del programma.
         start_system_monitor_worker(
             service_socket=service_socket,
             dbmanager=dbmanager,
             shutdown_event=shutdown_event,
             interval=10
         )
+
+        # 7. Avvio del Server DICOM (SCP)
+        dicom_server = start_dicom_server(dbmanager, repos)        
+
+        # 8. Avvio opzionale dell'API REST / WebSocket
+        app = create_fastapi_app(dbmanager, repos)
+        api_server = start_api_server(app, host="0.0.0.0", port=8000)
+                  
 
         logger.info("HealthPACS Service avviato con successo. In attesa di richieste...")
 
@@ -204,7 +164,8 @@ def main():
 
     finally:
         logger.info("Inizio procedura di Shutdown...")
-
+        
+            
        # 1. Se il socket è ancora attivo, notifichiamo lo stato OFFLINE alla Web App
         if service_socket:
             logger.info("Invio notifica di spegnimento a HealthPACSWeb...")
@@ -213,7 +174,7 @@ def main():
                 "sender": "HealthPACSService",
                 "status": SERVICE_STATUS_STATES["OFFLINE"],
                 "message": "HealthPACSService è in fase di spegnimento controllato."
-            })
+            })        
             
             # Arrestiamo il client socket (che invierà la notifica e chiuderà la connessione)
             logger.info("Arresto del Client Socket Notifiche...")

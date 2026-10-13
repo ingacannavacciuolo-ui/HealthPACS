@@ -1,11 +1,5 @@
-/* Stili della pagina di Login con Top Bar integrata */
-.login-page-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: 20px;
-    
-    /* Overlay scuro + Immagine di sfondo */
+/* Sfondo fisso a tutto schermo ancorato al body */
+body {
     background-image: 
         linear-gradient(rgba(9, 2, 25, 0.7), rgba(5, 15, 35, 0.7)),
         url('/static/img/Login_Background_1.jpg');
@@ -13,6 +7,29 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Stili della pagina di Login con Top Bar integrata */
+.login-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+    
+    zoom: 0.90
+    
+}
+
+/* Gestione fallback per motori di rendering che non supportano zoom */
+@supports not (zoom: 0.85) {
+    .login-page-wrapper {
+        transform: scale(0.85);
+        transform-origin: top center;
+        width: 117.65%; /* Compensazione larghezza (100 / 0.85) */
+        margin: 0 auto;
+    }
 }
 
 /* Card in alto a tutta larghezza */

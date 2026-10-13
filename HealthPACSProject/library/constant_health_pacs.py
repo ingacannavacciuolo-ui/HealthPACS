@@ -30,6 +30,9 @@ APPLICATION_NAME_SERVICE = 'HealthPACSService'
 SERVICE_STATUS = 'SERVICE_STATUS'
 SERVICE_STATUS_UPDATE = 'service_status_update'
 
+HEALT_PACS_WEB_URL_DEFAULT = "http://localhost:5000"
+
+
 #COSTANTI DI STATO
 #****************************************
 SERVICE_STATUS_STATES = {

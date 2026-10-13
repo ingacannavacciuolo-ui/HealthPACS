@@ -1,23 +1,11 @@
 <!-- Componente Autonomo: Card Allerta di Sistema -->
 <div id="alert-{{ notify_key }}" class="alert-card-tech {{ severity | lower }}">
-    <!-- Icona Neon coordinata con la Severity -->
-    <div class="alert-icon">
-        {% if severity == 'CRITICAL' %}
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2a7 7 0 00-7 7v4.29l-1.7 1.7A1 1 0 004 17h16a1 1 0 00.7-1.71L19 13.29V9a7 7 0 00-7-7zm-1 5h2v2h2v2h-2v2h-2v-2H9V9h2V7zm1 15a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22z"/>
-            </svg>
-        {% else %}
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2a7 7 0 00-7 7v4.29l-1.7 1.7A1 1 0 004 17h16a1 1 0 00.7-1.71L19 13.29V9a7 7 0 00-7-7zm0 20a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22z"/>
-            </svg>
-        {% endif %}
-    </div>
+    <!-- Icona Neon gestita al 100% dal CSS in base alla classe severity -->
+    <div class="alert-icon"></div>
 
     <!-- Testo dell'Allerta -->
     <div class="alert-content">
-        <span class="alert-prefix">
-            {% if severity == 'CRITICAL' %}ALERT:{% elif severity == 'WARNING' %}AVVISO:{% else %}INFO:{% endif %}
-        </span>
+        <span class="alert-prefix"></span>
         <span class="alert-message">{{ message }}</span>
     </div>
 

@@ -32,6 +32,17 @@ const AlertServerCard = {
         // Evento di connessione Socket
         this.socket.on('connect', () => {
             console.log(`[AlertServerCard] Connesso al namespace: ${SOCKET_NAMESPACES.WEB}`);
+
+            // Il BROWSER chiede esplicitamente le notifiche attive dal DB al refresh / apertura
+            this.socket.emit('get_active_alerts');
+        });
+
+        // Riceve la lista e renderizza le card
+        this.socket.on('active_alerts_list', (alerts) => {
+            console.log('[AlertServerCard] Ricevute allerte attive dal DB:', alerts);
+            if (Array.isArray(alerts)) {
+                alerts.forEach(alertData => this.renderAlert(alertData));
+            }
         });
 
         // Nomi dei canali dagli eventi di Severity

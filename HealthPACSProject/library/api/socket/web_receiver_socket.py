@@ -13,7 +13,7 @@ from library.constant_health_pacs import (
     SEVERITY,
     APPLICATION_NAME_SERVICE
 )
-from library.repository import AppSystemSettingsRepo
+from library.repository import AppNotificationWorkerRepo
 
 
 # 1. Server Socket.IO asincrono (compatibile ASGI)
@@ -70,6 +70,7 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
             to=sid
         )
 
+
     async def on_message(self, sid, data: Dict[str, Any]):
         if not isinstance(data, dict):
             return
@@ -121,8 +122,38 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
             logger.info(f"[WEB SOCKET RECEIVER] Browser disconnesso [sid: {sid}] (nessun impatto sullo stato)")
 
    
-   
-   
+    # Recupera tutti gli alert attivi per mandarli al browser
+    async def on_get_active_alerts(self, sid):
+        """
+        Invocato quando un browser (incluso F5/refresh) richiede la lista 
+        delle allerte attualmente attive nel DB.
+        """
+        logger.info(f"[WEB SOCKET RECEIVER] Richiesta allerte attive dal client [sid: {sid}]")
+        try:
+            with self.dbmanager.get_session() as session:
+                # Usa il repository per recuperare le allerte con is_active = True
+                repo = AppNotificationWorkerRepo(session)
+                active_events = repo.get_active_notifications()  # o repo.get_all_active_notifications()
+
+                alerts_data = []
+                for event in active_events:
+                    alerts_data.append({
+                        "sender": APPLICATION_NAME_SERVICE,
+                        "type": event.notify_type,
+                        "notify_key": event.notify_key,
+                        "message": event.notify_description,
+                        "permanent": event.permanent,
+                        "severity": event.severity,
+                        "is_active": True,
+                        "timestamp": time.time()
+                    })
+
+                # Invia la lista ESCLUSIVAMENTE al client richiedente (sid)
+                await self.emit("active_alerts_list", alerts_data, to=sid)
+                logger.info(f"[WEB SOCKET RECEIVER] Inviate {len(alerts_data)} allerte attive al client [sid: {sid}]")
+
+        except Exception as e:
+            logger.error(f"[WEB SOCKET RECEIVER] Errore durante il recupero delle allerte attive per sid {sid}: {e}", exc_info=True)
    
    
     # --- HANDLER DEDICATI PER TIPOLOGIA ---

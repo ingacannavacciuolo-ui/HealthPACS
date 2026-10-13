@@ -24,6 +24,7 @@ body, html {
     overflow: hidden;
     background: radial-gradient(circle at center, var(--bg-gradient-end) 0%, var(--bg-gradient-start) 100%);
     color: var(--text-light);
+    
 }
 
 /* Structural Layout */

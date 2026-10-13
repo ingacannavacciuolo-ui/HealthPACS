@@ -26,6 +26,7 @@ class AuthService:
 
         Fallback a 30 minuti in caso di errore o valore mancante.
         """
+        # Il valore della durata è recuperto da app_setting_system tramite la key SESSION_DURATION_MINUTES
         val_str = self.settings_repo.get_setting_value(
             SESSION_DURATION_MINUTES, default_value="480"
         )

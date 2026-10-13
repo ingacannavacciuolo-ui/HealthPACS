@@ -8,12 +8,12 @@
 2. Completare la gestione ORM per tutte le tabelle. 
 
    
-3. Gestione dello storage dicom da parte di un nodo configurato.
+3. Gestione dello storage dicom da parte di un nodo configurato. 
    Nella fase di storage vengono effettuate le seguenti operazioni:
       1. Controllare se gli OID che arrivano sono permessi con quella SOP Class e Transfer Syntax
       2. Prelevare le informazioni dalla connessione e scrivere nel database secondo il criterio: STUDIO/SERIE/ISTANZA,
          con una modalità fast.
-      3. Trovare l'archivio a minor dimensione in cui salvare lo STUDIO   
+      3. Trovare l'archivio a minor dimensione in cui salvare lo STUDIO (PER ORA NO. USA UN SOLO ARCHIVIO ALLA VOLTA)  
 
 4. Passare il livello di debug per 
         pynetdicom_logger = logging.getLogger("pynetdicom")
@@ -24,6 +24,8 @@
 5. Gestire l'abilitazione e disattivazione dei log.
 
 6. Gestire la durata della sessione in minuti per gli utenti connessi (vedi @router.post("/login") in # library/api/web/pages_router.py)
+   e fare uscire il messaggio quando la sessione è scaduta. 
+   La parte di recupero durata in minuti è già implementata.
 
 7. Fare la pagina di login per verifica autenticazione . Completare con scelta loghi e colori. URGENTE - OK
 
@@ -31,6 +33,6 @@
 
 9. Inserire lo stato della connessione del server. Verificare perché c'è un flick quando si attiva una nuova pagina di login - OK
 
-10. Definire le key ed i messaggi preimpostati per Alert e notifiche. 
-    Co
+10. Definire le key ed i messaggi preimpostati per Alert e notifiche. OK
+    
 
