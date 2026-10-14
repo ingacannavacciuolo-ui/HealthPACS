@@ -54,20 +54,34 @@ async def do_login(
     user_agent = request.headers.get("User-Agent", "Web-Browser")
 
     # AuthService salverà i metadati su app_users_sessions
-    auth_result = auth_service.login(
+    auth_result, error_code = auth_service.login(
         username=username,
         password_plain=password,
         ip_address=client_ip,
         user_agent=user_agent
     )
 
-    if not auth_result:
+    # CASO 1: Credenziali errate -> Errore rosso dentro la card di login
+    if error_code == "BAD_CREDENTIALS":
         return templates.TemplateResponse(
             request=request,
             name="login.html",
             context={
                 "title": "HealthPACS Web - Login",
                 "error": "Credenziali non valide."
+            },
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # CASO 2: Utente disabilitato -> Scatena la card d'allerta arancione
+    if error_code == "USER_DISABLED":
+        return templates.TemplateResponse(
+            request=request,
+            name="login.html",
+            context={
+                "title": "HealthPACS Web - Login",
+                "unauthorized_alert": True,
+                "unauthorized_message": "Utente non autorizzato ad accedere al sistema."
             },
             status_code=status.HTTP_401_UNAUTHORIZED
         )

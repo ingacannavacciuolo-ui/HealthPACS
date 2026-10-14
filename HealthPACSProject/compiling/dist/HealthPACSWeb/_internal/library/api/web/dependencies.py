@@ -3,6 +3,7 @@
 from typing import Dict, Any
 from fastapi import Request, HTTPException, status, Depends
 from library.services.auth_service import AuthService
+from library.constant_health_pacs import LOGIN_SESSION_TIMEOUT, LOGIN_UNAUTHORIZED
 
 
 def get_auth_service(request: Request) -> AuthService:
@@ -28,10 +29,20 @@ async def get_current_user_session(
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
 
-    if not token:
+    '''if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token di sessione mancante."
+        )'''
+    # CASE 1: Nessun token fornito -> Utente non autorizzato
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "code": "UNAUTHORIZED",
+                "message": "Utente non autorizzato.",
+                "notify_key": LOGIN_UNAUTHORIZED
+            }
         )
 
     # Invoca la validate_session su AuthService (che esegue lo sliding update sul DB)
@@ -39,7 +50,11 @@ async def get_current_user_session(
     if not session_info:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Sessione scaduta o non valida."
+            detail={
+                "code": "SESSION_EXPIRED",
+                "message": "Sessione scaduta o non valida.",
+                "notify_key": LOGIN_SESSION_TIMEOUT
+            }
         )
 
     return session_info

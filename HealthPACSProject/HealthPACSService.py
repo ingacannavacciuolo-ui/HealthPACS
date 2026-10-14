@@ -172,7 +172,7 @@ def main():
             service_socket.send_notification({
                 "type": SERVICE_STATUS,
                 "sender": "HealthPACSService",
-                "status": SERVICE_STATUS_STATES["OFFLINE"],
+                "status": ["OFFLINE"],
                 "message": "HealthPACSService è in fase di spegnimento controllato."
             })        
             

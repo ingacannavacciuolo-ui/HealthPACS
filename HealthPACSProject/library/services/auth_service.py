@@ -62,13 +62,9 @@ class AuthService:
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente non trovato: '{clean_username}'"
             )
-            return None
+            return None, "BAD_CREDENTIALS"
 
-        if not user.get("is_active", False):
-            logger.warning(
-                f"AuthService: Tentativo di login fallito. Utente disabilitato: '{clean_username}'"
-            )
-            return None
+       
 
         # 2. Verifica hash della password con Argon2id
         try:
@@ -77,10 +73,16 @@ class AuthService:
             logger.warning(
                 f"AuthService: Password errata per l'utente: '{clean_username}'"
             )
-            return None
+            return None, "BAD_CREDENTIALS"
         except Exception as e:
             logger.error(
                 f"AuthService: Errore durante la verifica password per '{clean_username}': {e}"
+            )
+            return None, "BAD_CREDENTIALS"
+        
+        if not user.get("is_active", False):
+            logger.warning(
+                f"AuthService: Tentativo di login fallito. Utente disabilitato: '{clean_username}'"
             )
             return None
 
