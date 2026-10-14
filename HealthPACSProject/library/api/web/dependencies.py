@@ -28,18 +28,19 @@ async def get_current_user_session(
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
 
+   # CASO 1: Token di sessione assente
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token di sessione mancante."
+            detail="missing_token"
         )
 
-    # Invoca la validate_session su AuthService (che esegue lo sliding update sul DB)
+    # CASO 2: Token inviato ma sessione scaduta sul DB
     session_info = auth_service.validate_session(token)
     if not session_info:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Sessione scaduta o non valida."
+            detail="session_expired"
         )
 
     return session_info

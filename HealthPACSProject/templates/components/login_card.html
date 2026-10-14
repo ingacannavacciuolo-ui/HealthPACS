@@ -8,10 +8,14 @@
             <h2>Login</h2>
         </div>
 
-        {% if error %}
+        {% if bad_credential_alert %}
         <div class="login-error-alert" id="loginErrorAlert">
-            {{ error }}
-        </div>
+            {{ bad_credential_message }}
+        </div>        
+        {% elif unauthorized_alert%}
+            <div class="login-warning-alert" id="loginWarningAlert">
+                {{ unauthorized_message }}
+            </div>
         {% endif %}
 
         <form action="/login" method="POST" id="loginForm">

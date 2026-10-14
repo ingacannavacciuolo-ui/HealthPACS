@@ -2,10 +2,18 @@
 
 import os
 import sys
+from typing import Optional
 from fastapi import APIRouter, Request, Form, Response, Depends, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from library.constant_health_pacs import SOCKET_NAMESPACES, SOCKET_EVENTS, SERVICE_STATUS_STATES,SEVERITY
+from library.constant_health_pacs import (
+    SOCKET_NAMESPACES, 
+    SOCKET_EVENTS, 
+    SERVICE_STATUS_STATES,
+    SEVERITY,
+    LOGIN_BAD_CREDENTIALS,
+    LOGIN_UNAUTHORIZED
+    )
 
 from library.services.auth_service import AuthService
 from library.api.web.dependencies import get_auth_service, get_current_user_session
@@ -29,17 +37,34 @@ templates.env.globals["SOCKET_EVENTS"] = SOCKET_EVENTS
 templates.env.globals["SERVICE_STATUS_STATES"] = SERVICE_STATUS_STATES
 templates.env.globals["SEVERITY"] = SEVERITY
 
-@router.get("/", response_class=HTMLResponse)
-async def login_page(request: Request, auth_service: AuthService = Depends(get_auth_service)):
+
+@router.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)  # 204 No Content: dice al browser che l'icona non c'è, senza generare errori 404
+
+@router.get("/",  response_class=HTMLResponse)
+async def login_page(request: Request, 
+                     reason: Optional[str] = None,
+                     auth_service: AuthService = Depends(get_auth_service)):
     """Mostra la pagina di login. Se la sessione è già valida, reindirizza a /querystudies."""
     token = request.cookies.get("session_token")
     if token and auth_service.validate_session(token):
         return RedirectResponse(url="/querystudies", status_code=status.HTTP_302_FOUND)
 
+    context = {"title": "HealthPACS Web - Login"}
+
+   # Distinzione precisa tra Token Mancante e Sessione Scaduta
+    if reason == "missing_token":
+        context["missing_token_alert"] = True
+        context["missing_token_message"] = "Autenticazione richiesta. Effettuare il login per accedere."
+    elif reason == "session_expired":
+        context["session_expired_alert"] = True
+        context["session_expired_message"] = "Sessione scaduta per inattività. Effettuare nuovamente il login."
+
     return templates.TemplateResponse(
         request=request,
         name="login.html",
-        context={"title": "HealthPACS Web - Login"}
+        context=context
     )
 
 
@@ -62,19 +87,20 @@ async def do_login(
     )
 
     # CASO 1: Credenziali errate -> Errore rosso dentro la card di login
-    if error_code == "BAD_CREDENTIALS":
+    if error_code == LOGIN_BAD_CREDENTIALS:
         return templates.TemplateResponse(
             request=request,
             name="login.html",
             context={
                 "title": "HealthPACS Web - Login",
-                "error": "Credenziali non valide."
+                "bad_credential_alert": True,
+                "bad_credential_message": "Credenziali non valide."
             },
             status_code=status.HTTP_400_BAD_REQUEST
         )
     
     # CASO 2: Utente disabilitato -> Scatena la card d'allerta arancione
-    if error_code == "USER_DISABLED":
+    if error_code == LOGIN_UNAUTHORIZED:
         return templates.TemplateResponse(
             request=request,
             name="login.html",
@@ -115,5 +141,20 @@ async def logout(
 
 
 @router.get("/querystudies", response_class=HTMLResponse)
-async def query_studies_page(user: dict = Depends(get_current_user_session)):
-    return f"<h1>Benvenuto {user.get('username', 'Utente')}!</h1><p>Login effettuato con successo.</p><a href='/logout'>Logout</a>"
+async def query_studies_page(
+    request: Request,
+    user: dict = Depends(get_current_user_session)
+):
+    return templates.TemplateResponse(
+        request=request,
+        name="querystudies.html",
+        context={
+            "user": user
+        }
+    )
+
+
+@router.get("/api/v1/studies")
+async def get_studies(user: dict = Depends(get_current_user_session)):
+    # Se la sessione è valida torna i dati, altrimenti get_current_user_session lancia il 401 (detail="session_expired")
+    return {"status": "ok", "data": []}

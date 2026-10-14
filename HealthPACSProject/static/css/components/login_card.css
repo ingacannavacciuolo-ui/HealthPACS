@@ -176,3 +176,15 @@
     text-align: center;
     box-shadow: 0 0 12px rgba(255, 77, 77, 0.5);
 }
+
+.login-warning-alert {
+    background: rgba(245, 111, 2, 0.15);       /* Sfondo arancione semitrasparente */
+    border: 1px solid #f97316;                  /* Bordo arancione vivo */
+    color: #fdba74;                             /* Testo arancione chiaro e ben leggibile */
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(249, 115, 22, 0.4); /* Glow arancione neon */
+}

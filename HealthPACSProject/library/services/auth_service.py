@@ -8,7 +8,7 @@ from library.logger import logger
 from library.repository import AppUsersRepo
 from library.repository import AppUsersSessionsRepo
 from library.repository import AppSystemSettingsRepo
-from library.constant_health_pacs import SESSION_DURATION_MINUTES
+from library.constant_health_pacs import SESSION_DURATION_MINUTES, LOGIN_BAD_CREDENTIALS,LOGIN_UNAUTHORIZED
 
 
 class AuthService:
@@ -62,7 +62,7 @@ class AuthService:
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente non trovato: '{clean_username}'"
             )
-            return None, "BAD_CREDENTIALS"
+            return None, LOGIN_BAD_CREDENTIALS
 
        
 
@@ -73,18 +73,18 @@ class AuthService:
             logger.warning(
                 f"AuthService: Password errata per l'utente: '{clean_username}'"
             )
-            return None, "BAD_CREDENTIALS"
+            return None, LOGIN_BAD_CREDENTIALS
         except Exception as e:
             logger.error(
                 f"AuthService: Errore durante la verifica password per '{clean_username}': {e}"
             )
-            return None, "BAD_CREDENTIALS"
+            return None, LOGIN_BAD_CREDENTIALS
         
         if not user.get("is_active", False):
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente disabilitato: '{clean_username}'"
             )
-            return None
+            return None, LOGIN_UNAUTHORIZED
 
         # 3. Determina la durata della sessione (da DB se non passata esplicitamente)
         if duration_minutes is None:
@@ -106,7 +106,7 @@ class AuthService:
             logger.error(
                 f"AuthService: Impossibile creare la sessione DB per utente '{clean_username}'"
             )
-            return None
+            return None, "SESSION_CREATE_ERROR"
 
         # 5. Calcolo permessi effettivi (Ruolo + Eccezioni)
         permissions = self.users_repo.get_effective_permission_codes(user["id"])
@@ -121,7 +121,7 @@ class AuthService:
             "username": user["username"],
             "role_id": user.get("users_roles_id"),
             "permissions": list(permissions),
-        }
+        }, None
 
     def validate_session(self, session_token: str) -> Optional[Dict[str, Any]]:
         """Verifica se un token di sessione inviato è attivo e non scaduto.

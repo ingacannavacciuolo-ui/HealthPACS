@@ -1,0 +1,14 @@
+{% extends "main_page.html" %}
+
+{% block title %}HealthPACS - Query Studies{% endblock %}
+
+{% block content %}
+    <h1>Benvenuto {{ user.username if user and user.username else 'Utente' }}!</h1>
+    <p>Login effettuato con successo.</p>
+
+<!-- Qualsiasi bottone o link con data-api viene intercettato automaticamente -->
+<div style="margin-top: 20px;">
+    <button data-api="/api/v1/studies" class="btn">Carica Studi</button>
+</div>
+    <script src="/static/js/querystudies.js"></script>
+{% endblock %}

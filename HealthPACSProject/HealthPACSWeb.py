@@ -3,8 +3,9 @@ import sys
 import signal
 import threading
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI,Request, HTTPException, status
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 from library.dbmanager import DatabaseManager
 from library.logger import HealthPACSLogger
@@ -33,6 +34,16 @@ def signal_handler(signum, frame):
 
 def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> FastAPI:
     app = FastAPI(title="HealthPACS Web", version="1.0.0")
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException):
+        # Se un'eccezione 401 viene sollevata navigando su una pagina HTML
+        if exc.status_code == status.HTTP_401_UNAUTHORIZED:
+            return RedirectResponse(url="/?reason=session_expired", status_code=status.HTTP_302_FOUND)
+        
+        # Per tutti gli altri errori HTTP restituisce la gestione standard
+        from fastapi.exception_handlers import http_exception_handler as default_handler
+        return await default_handler(request, exc)
 
     # Iniezione riferimenti DB e Repository nello stato dell'applicazione
     app.state.dbmanager = dbmanager
