@@ -8,7 +8,7 @@ from library.logger import logger
 from library.repository import AppUsersRepo
 from library.repository import AppUsersSessionsRepo
 from library.repository import AppSystemSettingsRepo
-from library.constant_health_pacs import SESSION_DURATION_MINUTES, LOGIN_BAD_CREDENTIALS,LOGIN_UNAUTHORIZED
+from library.constant_health_pacs import SESSION_DURATION_MINUTES, NOTIFY_ERROR
 
 
 class AuthService:
@@ -62,7 +62,7 @@ class AuthService:
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente non trovato: '{clean_username}'"
             )
-            return None, LOGIN_BAD_CREDENTIALS
+            return None, NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]
 
        
 
@@ -73,18 +73,18 @@ class AuthService:
             logger.warning(
                 f"AuthService: Password errata per l'utente: '{clean_username}'"
             )
-            return None, LOGIN_BAD_CREDENTIALS
+            return None, NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]
         except Exception as e:
             logger.error(
                 f"AuthService: Errore durante la verifica password per '{clean_username}': {e}"
             )
-            return None, LOGIN_BAD_CREDENTIALS
+            return None, NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]
         
         if not user.get("is_active", False):
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente disabilitato: '{clean_username}'"
             )
-            return None, LOGIN_UNAUTHORIZED
+            return None, NOTIFY_ERROR["LOGIN_UNAUTHORIZED"]
 
         # 3. Determina la durata della sessione (da DB se non passata esplicitamente)
         if duration_minutes is None:

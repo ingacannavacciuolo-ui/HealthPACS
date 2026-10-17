@@ -46,9 +46,9 @@ const AlertServerCard = {
         });
 
         // Nomi dei canali dagli eventi di Severity
-        const criticalEvent = (typeof SEVERITY !== 'undefined' && SEVERITY.CRITICAL) ? SEVERITY.CRITICAL : 'CRITICAL';
-        const warningEvent  = (typeof SEVERITY !== 'undefined' && SEVERITY.WARNING)  ? SEVERITY.WARNING  : 'WARNING';
-        const infoEvent     = (typeof SEVERITY !== 'undefined' && SEVERITY.INFO)     ? SEVERITY.INFO     : 'INFO';
+        const criticalEvent = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.CRITICAL) ? NOTIFY_SEVERITY.CRITICAL : 'CRITICAL';
+        const warningEvent  = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.WARNING)  ? NOTIFY_SEVERITY.WARNING  : 'WARNING';
+        const infoEvent     = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.INFO)     ? NOTIFY_SEVERITY.INFO     : 'INFO';
 
         // Ascolto diretto sui tre canali di severità
         this.socket.on(criticalEvent, (data) => this.renderAlert(data));

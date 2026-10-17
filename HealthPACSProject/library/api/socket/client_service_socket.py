@@ -1,4 +1,6 @@
 # library/socket/client_service_socket.py
+# FUNZIONA A LIVELLO HealthPACSService
+# Gestisce la connessione automatica resiliente e l'invio non bloccante di notifiche verso HealthPACSWeb.
 
 import json
 import time
@@ -127,7 +129,24 @@ class HealthPACSServiceClientSocket:
                     delay = min(delay * 1.5, max_delay)
             else:
                 time.sleep(1)
+    
+    def stop(self):
+        logger.info("[SERVICE SOCKET] Arresto in corso...")
+        self.is_running = False
+        self.is_connected_event.clear()
 
+        if self.sio.connected:
+            try:
+                self.sio.disconnect()
+            except Exception:
+                pass          
+
+        logger.info("[SERVICE SOCKET] Client Socket arrestato.")
+
+
+    #--------------------------------------------------------------------------
+    #  GESTIONE NOTIFICHE VERSO HealthPACSWeb
+    #--------------------------------------------------------------------------
     def send_notification(self, payload: Dict[str, Any]) -> bool:
         if not isinstance(payload, dict) or "type" not in payload:
             logger.error("[SERVICE SOCKET] Payload non valido: la chiave 'type' è obbligatoria.")
@@ -164,15 +183,4 @@ class HealthPACSServiceClientSocket:
             except Empty:
                 break
 
-    def stop(self):
-        logger.info("[SERVICE SOCKET] Arresto in corso...")
-        self.is_running = False
-        self.is_connected_event.clear()
-
-        if self.sio.connected:
-            try:
-                self.sio.disconnect()
-            except Exception:
-                pass          
-
-        logger.info("[SERVICE SOCKET] Client Socket arrestato.")
+    

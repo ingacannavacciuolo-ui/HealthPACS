@@ -29,21 +29,28 @@ APPLICATION_NAME_SERVICE = 'HealthPACSService'
 
 SERVICE_STATUS = 'SERVICE_STATUS'
 LOGIN_SESSION_TIMEOUT = 'LOGIN_SESSION_TIMEOUT'
-LOGIN_BAD_CREDENTIALS = 'LOGIN_BAD_CREDENTIALS'
-LOGIN_UNAUTHORIZED = 'LOGIN_UNAUTHORIZED'
+
 SERVICE_STATUS_UPDATE = 'service_status_update'
 
 HEALT_PACS_WEB_URL_DEFAULT = "http://localhost:5000"
 
 
-#COSTANTI DI STATO
-#****************************************
+# COSTANTI DI STATO - Constanti usate per gestire
+# lo stato di un oggetto o di un'attività
+#*********************************************
 SERVICE_STATUS_STATES = {
-    "ONLINE": 'ONLINE',
-    "OFFLINE": 'OFFLINE'
+    "ONLINE": "ONLINE",
+    "OFFLINE": "OFFLINE",
+    "READY": "READY",
+    "SCANNING": "SCANNING",
+    "COMPLETED": "COMPLETED",
+    "STANDBY": "STANDBY",
+    "FAILED": "FAILED"
 }
 
-#COSTANTI SOCKET EVENTS
+#COSTANTI SOCKET EVENTS - Costanti gestiste
+# nella connessione socket tra il client_service_socket
+# ed il web_receiver_socket
 #********************************************
 SOCKET_EVENTS = {
     "SERVICE_STATUS_UPDATE": "service_status_update",
@@ -60,7 +67,10 @@ WEB_SOCKET_NAMESPACE = "WEB_SOCKET_NAMESPACE"
 DEFAULT_WEB_SOCKET_NAMESPACE = "/web"
 
 
-#COSTANTI NOTIFY KEY
+# COSTANTI NOTIFY KEY - USATE NELLA GESTIONE DELLE
+# NOTIFICHE da HeakthPACSService ed HealtPacsWeb
+# Sono le chiavi per gli alert che vengono sollevati
+# presenti nella tabella "app_notification_worker"
 #****************************************
 NOTIFY_KEY = {
     "STORAGE_WARNING": "STORAGE_WARNING",
@@ -68,7 +78,11 @@ NOTIFY_KEY = {
     "MEMORY_LIMIT_WARNING": "MEMORY_LIMIT_WARNING"
 }
 
-#COSTANTI NOTIFY TYPE
+#COSTANTI NOTIFY TYPE - USATE NELLA GESTIONE DELLE
+# NOTIFICHE da HeakthPACSService ed HealtPacsWeb
+# Sono i tipi di notifiche per gli alert che 
+# vengono sollevati - presenti nella tabella 
+# "app_notification_worker"
 #****************************************
 NOTIFY_TYPE = {
     "SYSTEM_ALERT": "SYSTEM_ALERT",
@@ -76,9 +90,13 @@ NOTIFY_TYPE = {
     "WORKLIST_SYNC": "WORKLIST_SYNC"
 }
 
-#COSTANTI SEVERITY
+#COSTANTI SEVERITY - USATE NELLA GESTIONE DELLE
+# NOTIFICHE da HeakthPACSService ed HealtPacsWeb
+# Indicano il tipo di severità degli alert che 
+# vengono sollevati - presenti nella tabella 
+# "app_notification_worker"
 #************************************
-SEVERITY = {
+NOTIFY_SEVERITY = {
     "INFO": "INFO",
     "WARNING": "WARNING",
     "CRITICAL": "CRITICAL"
@@ -101,7 +119,20 @@ SOCKET_NAMESPACES = {
 }
 
 
-#CONSTANTS DICOM
+# COSTANTI DI ERRORI - Costanti usate per la notifica
+# di errori in fasi di sessione scaduta, token non
+# presente ect.
+#********************************************
+NOTIFY_ERROR = {
+    "MISSING_TOKEN": "missing_token",
+    "SESSION_EXPIRED": "session_expired",
+    "LOGIN_BAD_CREDENTIALS": "login_bad_credential",
+    "LOGIN_UNAUTHORIZED": "login_unauthorized"
+}
+
+
+
+#CONSTANTI AMBIENTE DICOM 
 #*********************************************
 HEALT_PACS_ID_APPLICATION = '1.1'
 

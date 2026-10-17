@@ -24,7 +24,8 @@
 5. Gestire l'abilitazione e disattivazione dei log.
 
 6. Gestire la durata della sessione in minuti per gli utenti connessi (vedi @router.post("/login") in # library/api/web/pages_router.py)
-   e fare uscire il messaggio quando la sessione è scaduta. 
+   e fare uscire il messaggio quando la sessione è scaduta. Gestire meglio i "TOAST" e la gestione di visualizzazione. Verifcare se
+   fare uscire un "TOAST" o un Warning come la pagina di login
    La parte di recupero durata in minuti è già implementata. - OK
 
 7. Fare la pagina di login per verifica autenticazione . Completare con scelta loghi e colori. URGENTE - OK

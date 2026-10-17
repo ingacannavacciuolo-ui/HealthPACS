@@ -10,7 +10,7 @@ from library.constant_health_pacs import (
     SOCKET_EVENTS,
     NOTIFY_KEY,
     NOTIFY_TYPE,
-    SEVERITY,
+    NOTIFY_SEVERITY,
     APPLICATION_NAME_SERVICE
 )
 from library.repository import AppNotificationWorkerRepo
@@ -87,14 +87,14 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         if msg_type == SERVICE_STATUS:
             await self._handle_service_status(data)
 
-        # Routing basato interamente sulla SEVERITY
-        elif severity == SEVERITY["CRITICAL"]:
+        # Routing basato interamente sulla NOTIFY_SEVERITY
+        elif severity == NOTIFY_SEVERITY["CRITICAL"]:
             await self._handle_severity_critical(data)
 
-        elif severity == SEVERITY["WARNING"]:
+        elif severity == NOTIFY_SEVERITY["WARNING"]:
             await self._handle_severity_warning(data)
 
-        elif severity == SEVERITY["INFO"]:
+        elif severity == NOTIFY_SEVERITY["INFO"]:
             await self._handle_severity_info(data)
 
         else:
@@ -185,7 +185,7 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         logger.warning(f"[CRITICAL ALERT] Key: {notify_key} | Msg: {message}")
 
         # Emette sul canale socket dedicato 'CRITICAL'
-        await self.emit(SEVERITY["CRITICAL"], data)
+        await self.emit(NOTIFY_SEVERITY["CRITICAL"], data)
 
 
 
@@ -197,7 +197,7 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         logger.warning(f"[WARNING ALERT] Key: {notify_key} | Msg: {message}")
 
         # Emette sul canale socket dedicato 'WARNING'
-        await self.emit(SEVERITY["WARNING"], data)
+        await self.emit(NOTIFY_SEVERITY["WARNING"], data)
 
 
 
@@ -210,85 +210,7 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         logger.info(f"[INFO ALERT] Key: {notify_key} | Msg: {message}")
 
         # Emette sul canale socket dedicato 'INFO'
-        await self.emit(SEVERITY["INFO"], data)
-
-
-
-
-    '''async def _handle_severity_warning(self, data: Dict[str, Any]):
-        """Gestisce avvisi di avvertimento (WARNING)."""
-        notify_type = data.get("type", "UNKNOWN_TYPE")
-        notify_key = data.get("notify_key", "UNKNOWN_KEY")
-        severity = data.get("severity", "WARNING")
-        message = data.get("message", "Nessun dettaglio fornito")
-        permanent = data.get("permanent", False)
-        is_active = data.get("is_active", True)
-
-        logger.warning(
-            f"[WARNING ALERT] [{notify_type}] Key: {notify_key} | Severity: {severity} | "
-            f"Permanent: {permanent} | Active: {is_active} | Msg: {message}"
-        )
-
-        # Invia il payload completo via socket ai client connessi
-        await self.emit("SYSTEM_ALERT", data)
-
-
-    async def _handle_severity_info(self, data: Dict[str, Any]):
-        """Gestisce avvisi informativi (INFO)."""
-        notify_type = data.get("type", "UNKNOWN_TYPE")
-        notify_key = data.get("notify_key", "UNKNOWN_KEY")
-        severity = data.get("severity", "INFO")
-        message = data.get("message", "Nessun dettaglio fornito")
-        permanent = data.get("permanent", False)
-        is_active = data.get("is_active", True)
-
-        logger.info(
-            f"[INFO ALERT] [{notify_type}] Key: {notify_key} | Severity: {severity} | "
-            f"Permanent: {permanent} | Active: {is_active} | Msg: {message}"
-        )
-
-        # Invia il payload completo via socket ai client connessi
-        await self.emit("SYSTEM_ALERT", data)
-
-    async def _handle_dicom_job_status(self, data: Dict[str, Any]):
-        """Gestisce lo stato di elaborazione/ricezione/invio di uno studio DICOM."""
-        study_instance_uid = data.get("study_uid")
-        job_state = data.get("job_state")  # es. "PROCESSING", "COMPLETED", "FAILED"
-        
-        logger.info(f"[DICOM HANDLER] Studio UID {study_instance_uid} -> Stato: {job_state}")
-        
-        # Inoltra in broadcast l'aggiornamento alla Dashboard/Interfaccia Web
-        await self.emit("DICOM_JOB_UPDATE", data)
-
-
-
-    async def _handle_sistem_alert(self, data: Dict[str, Any]):
-        """Gestisce avvisi di spazio in esaurimento o errori sui dischi PACS."""
-        notify_type = data.get("type", NOTIFY_TYPE["SYSTEM_ALERT"])
-        notify_key = data.get("notify_key", "UNKNOWN_KEY")
-        severity = data.get("severity", "WARNING")
-        message = data.get("message", "Nessun dettaglio fornito")
-        permanent = data.get("permanent", False)
-        is_active = data.get("is_active", True)
-
-        logger.warning(
-            f"[{notify_type}] Key: {notify_key} | Severity: {severity} | "
-            f"Permanent: {permanent} | Active: {is_active} | Msg: {message}"
-        )
-
-        # Invia il payload completo via socket ai client connessi
-        await self.emit(notify_type, data)
-
-
-
-
-    async def _handle_worklist_sync(self, data: Dict[str, Any]):
-        """Gestisce notifiche di sincronizzazione Worklist Modality."""
-        synced_items = data.get("synced_count", 0)
-        logger.info(f"[WORKLIST HANDLER] Sincronizzati {synced_items} elementi Modality Worklist.")
-        await self.emit("WORKLIST_UPDATE", data)'''
-
-
+        await self.emit(NOTIFY_SEVERITY["INFO"], data)
 
 
 

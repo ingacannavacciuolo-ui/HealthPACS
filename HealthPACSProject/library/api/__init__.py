@@ -5,7 +5,12 @@ from .socket import (
     init_socket_receiver,
     HealthPACSServiceClientSocket,
 )
-from .web import pages_router, get_auth_service, get_current_user_session
+from .web import (
+    pages_router, 
+    get_auth_service, 
+    get_current_user_session,
+    setup_template_globals,
+)
 
 __all__ = [
     "studies_rest_router",
@@ -16,4 +21,5 @@ __all__ = [
     "pages_router",
     "get_auth_service",
     "get_current_user_session",
+    "setup_template_globals",
 ]

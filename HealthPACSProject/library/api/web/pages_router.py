@@ -7,16 +7,11 @@ from fastapi import APIRouter, Request, Form, Response, Depends, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from library.constant_health_pacs import (
-    SOCKET_NAMESPACES, 
-    SOCKET_EVENTS, 
-    SERVICE_STATUS_STATES,
-    SEVERITY,
-    LOGIN_BAD_CREDENTIALS,
-    LOGIN_UNAUTHORIZED
+    NOTIFY_ERROR,
     )
 
 from library.services.auth_service import AuthService
-from library.api.web.dependencies import get_auth_service, get_current_user_session
+from library.api import get_auth_service, get_current_user_session, setup_template_globals
 
 router = APIRouter(tags=["Web Pages"])
 
@@ -30,23 +25,22 @@ else:
     templates_dir = os.path.abspath(os.path.join(base_path, "..", "..", "..", "templates"))
 
 templates = Jinja2Templates(directory=templates_dir)
-
 # Registrazione globale delle costanti per tutti i template HTML
-templates.env.globals["SOCKET_NAMESPACES"] = SOCKET_NAMESPACES
-templates.env.globals["SOCKET_EVENTS"] = SOCKET_EVENTS
-templates.env.globals["SERVICE_STATUS_STATES"] = SERVICE_STATUS_STATES
-templates.env.globals["SEVERITY"] = SEVERITY
+setup_template_globals(templates)
 
 
+ # 204 No Content: dice al browser che l'icona non c'è, senza generare errori 404
 @router.get("/favicon.ico", include_in_schema=False)
 async def favicon():
-    return Response(status_code=204)  # 204 No Content: dice al browser che l'icona non c'è, senza generare errori 404
+    return Response(status_code=204) 
 
+
+#Mostra la pagina di login. Se la sessione è già valida, reindirizza a /querystudies.    
 @router.get("/",  response_class=HTMLResponse)
 async def login_page(request: Request, 
                      reason: Optional[str] = None,
                      auth_service: AuthService = Depends(get_auth_service)):
-    """Mostra la pagina di login. Se la sessione è già valida, reindirizza a /querystudies."""
+    
     token = request.cookies.get("session_token")
     if token and auth_service.validate_session(token):
         return RedirectResponse(url="/querystudies", status_code=status.HTTP_302_FOUND)
@@ -54,10 +48,10 @@ async def login_page(request: Request,
     context = {"title": "HealthPACS Web - Login"}
 
    # Distinzione precisa tra Token Mancante e Sessione Scaduta
-    if reason == "missing_token":
+    if reason == NOTIFY_ERROR["MISSING_TOKEN"]:
         context["missing_token_alert"] = True
         context["missing_token_message"] = "Autenticazione richiesta. Effettuare il login per accedere."
-    elif reason == "session_expired":
+    elif reason == NOTIFY_ERROR["SESSION_EXPIRED"]:
         context["session_expired_alert"] = True
         context["session_expired_message"] = "Sessione scaduta per inattività. Effettuare nuovamente il login."
 
@@ -87,7 +81,7 @@ async def do_login(
     )
 
     # CASO 1: Credenziali errate -> Errore rosso dentro la card di login
-    if error_code == LOGIN_BAD_CREDENTIALS:
+    if error_code == NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]:
         return templates.TemplateResponse(
             request=request,
             name="login.html",
@@ -100,7 +94,7 @@ async def do_login(
         )
     
     # CASO 2: Utente disabilitato -> Scatena la card d'allerta arancione
-    if error_code == LOGIN_UNAUTHORIZED:
+    if error_code == NOTIFY_ERROR["LOGIN_UNAUTHORIZED"]:
         return templates.TemplateResponse(
             request=request,
             name="login.html",
