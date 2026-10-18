@@ -8,10 +8,14 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from library.constant_health_pacs import (
     NOTIFY_ERROR,
+    SYSTEM_SETTING_KEY,
+    LANG_KEY,
+    HEALT_PACS_WEB_FIRST_PAGE_DEFAULT,
     )
 
 from library.services.auth_service import AuthService
-from library.api import get_auth_service, get_current_user_session, setup_template_globals
+from .dependencies import get_auth_service, get_current_user_session
+from .template_globals import setup_template_globals
 
 router = APIRouter(tags=["Web Pages"])
 
@@ -41,19 +45,25 @@ async def login_page(request: Request,
                      reason: Optional[str] = None,
                      auth_service: AuthService = Depends(get_auth_service)):
     
+    
+
     token = request.cookies.get("session_token")
     if token and auth_service.validate_session(token):
-        return RedirectResponse(url="/querystudies", status_code=status.HTTP_302_FOUND)
+        repo_container = request.app.state.repo_container
+        first_page_url = repo_container.appsystemsettingsrepo.get_setting_value(
+            SYSTEM_SETTING_KEY.WEB_FIRST_PAGE, default_value=HEALT_PACS_WEB_FIRST_PAGE_DEFAULT
+        )
+        return RedirectResponse(url=first_page_url, status_code=status.HTTP_302_FOUND)
 
-    context = {"title": "HealthPACS Web - Login"}
+    context = {"title": "LOGIN_TITLE"}
 
    # Distinzione precisa tra Token Mancante e Sessione Scaduta
-    if reason == NOTIFY_ERROR["MISSING_TOKEN"]:
+    if reason == NOTIFY_ERROR.MISSING_TOKEN:
         context["missing_token_alert"] = True
-        context["missing_token_message"] = "Autenticazione richiesta. Effettuare il login per accedere."
-    elif reason == NOTIFY_ERROR["SESSION_EXPIRED"]:
+        context["missing_token_message"] = LANG_KEY.ALERT_MISSING_TOKEN
+    elif reason == NOTIFY_ERROR.SESSION_EXPIRED:
         context["session_expired_alert"] = True
-        context["session_expired_message"] = "Sessione scaduta per inattività. Effettuare nuovamente il login."
+        context["session_expired_message"] = LANG_KEY.ALERT_SESSION_EXPIRED
 
     return templates.TemplateResponse(
         request=request,
@@ -81,34 +91,38 @@ async def do_login(
     )
 
     # CASO 1: Credenziali errate -> Errore rosso dentro la card di login
-    if error_code == NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]:
+    if error_code == NOTIFY_ERROR.LOGIN_BAD_CREDENTIALS:
         return templates.TemplateResponse(
             request=request,
             name="login.html",
             context={
                 "title": "HealthPACS Web - Login",
                 "bad_credential_alert": True,
-                "bad_credential_message": "Credenziali non valide."
+                "bad_credential_message": LANG_KEY.ALERT_BAD_CREDENTIALS
             },
             status_code=status.HTTP_400_BAD_REQUEST
         )
     
     # CASO 2: Utente disabilitato -> Scatena la card d'allerta arancione
-    if error_code == NOTIFY_ERROR["LOGIN_UNAUTHORIZED"]:
+    if error_code == NOTIFY_ERROR.LOGIN_UNAUTHORIZED:
         return templates.TemplateResponse(
             request=request,
             name="login.html",
             context={
                 "title": "HealthPACS Web - Login",
                 "unauthorized_alert": True,
-                "unauthorized_message": "Utente non autorizzato ad accedere al sistema."
+                "unauthorized_message": LANG_KEY.ALERT_UNAUTHORIZED
             },
             status_code=status.HTTP_401_UNAUTHORIZED
         )
 
     session_token = auth_result["session_token"]
+    repo_container = request.app.state.repo_container
+    first_page_url = repo_container.appsystemsettingsrepo.get_setting_value(
+            SYSTEM_SETTING_KEY.WEB_FIRST_PAGE, default_value=HEALT_PACS_WEB_FIRST_PAGE_DEFAULT
+    )
 
-    redirect_response = RedirectResponse(url="/querystudies", status_code=status.HTTP_303_SEE_OTHER)
+    redirect_response = RedirectResponse(url=first_page_url, status_code=status.HTTP_303_SEE_OTHER)
     redirect_response.set_cookie(
         key="session_token",
         value=session_token,

@@ -3,12 +3,15 @@
 {% block title %}HealthPACS - Query Studies{% endblock %}
 
 {% block content %}
-    <h1>Benvenuto {{ user.username if user and user.username else 'Utente' }}!</h1>
-    <p>Login effettuato con successo.</p>
+    <h1>{{ _(LANG_KEY.WELCOME_USER) }} {{ user.username if user and user.username else 'Utente' }}!</h1>
+    <p>{{ _(LANG_KEY.LOGIN_SUCCESS) }}</p>
 
 <!-- Qualsiasi bottone o link con data-api viene intercettato automaticamente -->
 <div style="margin-top: 20px;">
-    <button data-api="/api/v1/studies" class="btn">Carica Studi</button>
+    <button data-api="/api/v1/studies" class="btn">{{ _(LANG_KEY.LOAD_STUDIES) }}</button>
 </div>
+    <!-- Helper i18n da caricare PRIMA dei componenti -->
+    <script src="/static/js/i18n.js"></script>
+    
     <script src="/static/js/querystudies.js"></script>
 {% endblock %}

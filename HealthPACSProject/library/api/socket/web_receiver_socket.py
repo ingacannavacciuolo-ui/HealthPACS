@@ -4,13 +4,14 @@ import logging
 from typing import Dict, Any
 from library.logger import logger
 from library.constant_health_pacs import (
-    SERVICE_STATUS,
+    MSG_SERVICE_SOCKET_TYPE,
     SERVICE_STATUS_STATES,
     SOCKET_NAMESPACES,
     SOCKET_EVENTS,
     NOTIFY_KEY,
     NOTIFY_TYPE,
     NOTIFY_SEVERITY,
+    LANG_KEY,
     APPLICATION_NAME_SERVICE
 )
 from library.repository import AppNotificationWorkerRepo
@@ -29,7 +30,7 @@ sio_app = socketio.ASGIApp(sio)
 # Stato globale in memoria per monitorare lo stato del Service
 class ServiceStatusState:
     last_heartbeat: float = 0
-    status: str = SERVICE_STATUS_STATES['OFFLINE']
+    status: str = SERVICE_STATUS_STATES.OFFLINE
 
 status_state = ServiceStatusState()
 
@@ -41,7 +42,7 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
     """
     def __init__(self, db_manager):
         self.dbmanager = db_manager
-        self.namespace = SOCKET_NAMESPACES["WEB"]
+        self.namespace = SOCKET_NAMESPACES.WEB
         self.service_sid = None  # Memorizza il SID di HealthPACSService
         super().__init__(self.namespace)
 
@@ -55,17 +56,17 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         is_alive = (
             status_state.last_heartbeat > 0 
             and (now - status_state.last_heartbeat) < 45 
-            and status_state.status == SERVICE_STATUS_STATES['ONLINE']
+            and status_state.status == SERVICE_STATUS_STATES.ONLINE
         )
         
-        current_status = SERVICE_STATUS_STATES['ONLINE'] if is_alive else SERVICE_STATUS_STATES['OFFLINE']
+        current_status = SERVICE_STATUS_STATES.ONLINE if is_alive else SERVICE_STATUS_STATES.OFFLINE
 
         # Risponde SOLO al browser appena connesso con lo stato reale freschissimo
         await self.emit(
-            SOCKET_EVENTS["SERVICE_STATUS_UPDATE"],
+            SOCKET_EVENTS.SERVICE_STATUS_UPDATE,
             {
                 "status": current_status,
-                "message": "Stato corrente del servizio PACS"
+                "message": LANG_KEY.SERVICE_STATUS_CURRENT_MSG
             },
             to=sid
         )
@@ -80,25 +81,16 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
             return
 
         self.service_sid = sid
-        msg_type = data.get("type")
-        severity = str(data.get("severity", "")).upper()
+        msg_type = data.get("msg_type")
+       
 
         # Se si tratta dello stato del servizio, lo gestiamo tramite il tipo
-        if msg_type == SERVICE_STATUS:
+        if msg_type == MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_STATUS:
             await self._handle_service_status(data)
-
-        # Routing basato interamente sulla NOTIFY_SEVERITY
-        elif severity == NOTIFY_SEVERITY["CRITICAL"]:
-            await self._handle_severity_critical(data)
-
-        elif severity == NOTIFY_SEVERITY["WARNING"]:
-            await self._handle_severity_warning(data)
-
-        elif severity == NOTIFY_SEVERITY["INFO"]:
-            await self._handle_severity_info(data)
-
-        else:
-            await self.emit("GENERIC_NOTIFICATION", data)
+        # Se si tratta dello stato di severity, lo gestiamo tramite il tipo
+        elif msg_type == MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_SEVERITY:
+            await self._handle_service_severity(data)
+           
         
 
     async def on_disconnect(self, sid):
@@ -106,14 +98,14 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         if sid == self.service_sid:
             logger.warning(f"[WEB SOCKET RECEIVER] HealthPACSService disconnesso [sid: {sid}]")
             self.service_sid = None
-            status_state.status = SERVICE_STATUS_STATES['OFFLINE']
+            status_state.status = SERVICE_STATUS_STATES.OFFLINE
 
             await self.emit(
-                SOCKET_EVENTS["SERVICE_STATUS_UPDATE"],
+                SOCKET_EVENTS.SERVICE_STATUS_UPDATE,
                 {
-                    "type": SERVICE_STATUS,
-                    "status": SERVICE_STATUS_STATES['OFFLINE'],
-                    "message": "Connessione con HealthPACSService interrotta.",
+                    "msg_type": MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_STATUS,
+                    "status": SERVICE_STATUS_STATES.OFFLINE,
+                    "message": LANG_KEY.SERVICE_OFFLINE,
                     "timestamp": time.time(),
                 }
             )
@@ -139,8 +131,9 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
                 for event in active_events:
                     alerts_data.append({
                         "sender": APPLICATION_NAME_SERVICE,
-                        "type": event.notify_type,
+                        "msg_type": MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_SEVERITY,                        
                         "notify_key": event.notify_key,
+                        "notify_type": event.notify_type,
                         "message": event.notify_description,
                         "permanent": event.permanent,
                         "severity": event.severity,
@@ -157,60 +150,77 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
    
    
     # --- HANDLER DEDICATI PER TIPOLOGIA ---
+   
 
     async def _handle_service_status(self, data: Dict[str, Any]):
         """Gestisce Heartbeat e stato operativo di HealthPACSService."""
         status_state.last_heartbeat = time.time()
-        status_state.status = data.get("status", SERVICE_STATUS_STATES['OFFLINE'])
+        status_state.status = data.get("status", SERVICE_STATUS_STATES.OFFLINE)
 
         logger.info(f"[STATUS HANDLER] Service status: {status_state.status} | Msg: {data.get('message')}")
         # EMIT verso il client Web (es. sul namespace LOGIN o SISTEMA)
         await sio.emit(
-            SOCKET_EVENTS["SERVICE_STATUS_UPDATE"], 
+            SOCKET_EVENTS.SERVICE_STATUS_UPDATE, 
             {
                 'status': status_state.status,
                 'message': data.get('message', '')
             }, 
             namespace=self.namespace  # oppure SISTEMA
         )
-        await self.emit(SOCKET_EVENTS["SERVICE_STATUS_UPDATE"], data)
+        await self.emit(SOCKET_EVENTS.SERVICE_STATUS_UPDATE, data)
+
+
+
+    async def _handle_service_severity(self, data: Dict[str, Any]):
+        severity = str(data.get("severity", "")).upper()
+        if severity == NOTIFY_SEVERITY.CRITICAL:
+                await self._handle_severity_critical(data)
+
+        elif severity == NOTIFY_SEVERITY.WARNING:
+            await self._handle_severity_warning(data)
+
+        elif severity == NOTIFY_SEVERITY.INFO:
+            await self._handle_severity_info(data)
+
+        else:
+            await self.emit(NOTIFY_SEVERITY.GENERIC, data)
 
         
 
     async def _handle_severity_critical(self, data: Dict[str, Any]):
         """Gestisce avvisi critici (CRITICAL)."""
-        notify_key = data.get("notify_key", "UNKNOWN_KEY")
-        message = data.get("message", "Nessun dettaglio fornito")
+        notify_key = data.get("notify_key", NOTIFY_KEY.UNKNOWN_KEY)
+        message = data.get("message", LANG_KEY.NO_DETAILS_PROVIDED)
 
         logger.warning(f"[CRITICAL ALERT] Key: {notify_key} | Msg: {message}")
 
         # Emette sul canale socket dedicato 'CRITICAL'
-        await self.emit(NOTIFY_SEVERITY["CRITICAL"], data)
+        await self.emit(NOTIFY_SEVERITY.CRITICAL, data)
 
 
 
     async def _handle_severity_warning(self, data: Dict[str, Any]):
         """Gestisce avvisi di avvertimento (WARNING)."""
-        notify_key = data.get("notify_key", "UNKNOWN_KEY")
-        message = data.get("message", "Nessun dettaglio fornito")
+        notify_key = data.get("notify_key", NOTIFY_KEY.UNKNOWN_KEY)
+        message = data.get("message", LANG_KEY.NO_DETAILS_PROVIDED)
 
         logger.warning(f"[WARNING ALERT] Key: {notify_key} | Msg: {message}")
 
         # Emette sul canale socket dedicato 'WARNING'
-        await self.emit(NOTIFY_SEVERITY["WARNING"], data)
+        await self.emit(NOTIFY_SEVERITY.WARNING, data)
 
 
 
 
     async def _handle_severity_info(self, data: Dict[str, Any]):
         """Gestisce avvisi informativi (INFO)."""
-        notify_key = data.get("notify_key", "UNKNOWN_KEY")
-        message = data.get("message", "Nessun dettaglio fornito")
+        notify_key = data.get("notify_key", NOTIFY_KEY.UNKNOWN_KEY)
+        message = data.get("message", LANG_KEY.NO_DETAILS_PROVIDED)
 
         logger.info(f"[INFO ALERT] Key: {notify_key} | Msg: {message}")
 
         # Emette sul canale socket dedicato 'INFO'
-        await self.emit(NOTIFY_SEVERITY["INFO"], data)
+        await self.emit(NOTIFY_SEVERITY.INFO, data)
 
 
 

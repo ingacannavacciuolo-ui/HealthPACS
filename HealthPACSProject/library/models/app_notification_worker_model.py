@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime
 from sqlalchemy.sql import func
 from library.models import Base
+from library.constant_health_pacs import NOTIFY_SEVERITY
 
 class AppNotificationWorkerModel(Base):
     __tablename__ = "app_notification_worker"
@@ -8,7 +9,7 @@ class AppNotificationWorkerModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     notify_key = Column(String(100), unique=True, nullable=False, index=True)
     notify_type = Column(String(50), nullable=False)
-    severity = Column(String(20), default="INFO", nullable=False)  # <-- NUOVO CAMPO
+    severity = Column(String(20), default=NOTIFY_SEVERITY.INFO, nullable=False)  # <-- NUOVO CAMPO
     notify_description = Column(Text, nullable=True)
     permanent = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=False, nullable=False)

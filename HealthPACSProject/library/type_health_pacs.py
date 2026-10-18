@@ -1,6 +1,7 @@
 import configparser
 from pathlib import Path
 from library.constant_health_pacs import *
+from library.repository import AppSystemSettingsRepo
 
 
 class HEALT_PACS_CONFIG:
@@ -29,6 +30,7 @@ class HEALT_PACS_CONFIG:
         fConfig.read(path, encoding='utf-8')
 
         # Popola il dizionario      
+        cls.CONFIG_HEALT_PACS_STORE[SYSTEM_LANGUAGE] = fConfig[SECTION_SYSTEM][SYSTEM_LANGUAGE]
 
         cls.CONFIG_HEALT_PACS_STORE[CONFIG_DATABASE_NAME] = fConfig[SECTION_DATABASE][CONFIG_DATABASE_NAME]
         cls.CONFIG_HEALT_PACS_STORE[CONFIG_DATABASE_HOST] = fConfig[SECTION_DATABASE][CONFIG_DATABASE_HOST]
@@ -36,10 +38,14 @@ class HEALT_PACS_CONFIG:
         cls.CONFIG_HEALT_PACS_STORE[CONFIG_DATABASE_USER] = fConfig[SECTION_DATABASE][CONFIG_DATABASE_USER]
         cls.CONFIG_HEALT_PACS_STORE[CONFIG_DATABASE_PASSWORD] = fConfig[SECTION_DATABASE][CONFIG_DATABASE_PASSWORD]
         
-        cls._config = fConfig
+        cls._config = fConfig        
 
 
-
+    # SYSTEM SECTION
+    #---------------------------------------------------------------------
+    @classmethod
+    def get_system_language(cls):
+        return cls.CONFIG_HEALT_PACS_STORE[SYSTEM_LANGUAGE]
 
     # DATABASE SECTION
     #---------------------------------------------------------------------
@@ -62,6 +68,8 @@ class HEALT_PACS_CONFIG:
     @classmethod
     def get_database_password(cls):
         return cls.CONFIG_HEALT_PACS_STORE[CONFIG_DATABASE_PASSWORD]
+    
+
 
 
 HEALT_PACS_CONFIG.load_once()  

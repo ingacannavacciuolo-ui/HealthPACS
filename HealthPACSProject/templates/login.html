@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ _(title) if title else _(LANG_KEY.LOGIN_TITLE) }}</title>
     <link rel="stylesheet" href="/static/css/main_page.css">
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="stylesheet" href="/static/css/components/login_card.css">
@@ -13,10 +13,13 @@
     <!-- Librerie esterne e Configurazione Globale dell'App -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
+        window.TRANSLATIONS = Object.freeze(JSON.parse('{{ TRANSLATIONS | default({}) | tojson | safe }}'));
+        const LANG_KEY = Object.freeze(JSON.parse('{{ LANG_KEY | tojson | safe }}'));
         const SOCKET_NAMESPACES = Object.freeze(JSON.parse('{{ SOCKET_NAMESPACES | tojson | safe }}'));
         const SOCKET_EVENTS = Object.freeze(JSON.parse('{{ SOCKET_EVENTS | tojson | safe }}'));
         const SERVICE_STATUS_STATES = Object.freeze(JSON.parse('{{ SERVICE_STATUS_STATES | tojson | safe }}'));
-        const NOTIFY_SEVERITY = Object.freeze(JSON.parse('{{ NOTIFY_SEVERITY | tojson | safe }}'));        
+        const SERVICE_STATUS_STATES_VIEW = Object.freeze(JSON.parse('{{ SERVICE_STATUS_STATES_VIEW | tojson | safe }}'));     
+        const NOTIFY_SEVERITY = Object.freeze(JSON.parse('{{ NOTIFY_SEVERITY | tojson | safe }}'));     
     </script>
 </head>
 <body>
@@ -49,9 +52,7 @@
             </div>
 
             <!-- Titolo principale (rimane centrato e immobile) -->
-            <div class="page-title">
-                ACCESSO SISTEMA ARCHIVIAZIONE IMMAGINI (PACS)
-            </div>
+            <div class="page-title">{{ _(LANG_KEY.LOGIN_HEADER) }}</div>
 
             <!-- Overlay Destro: INFO -->
             <div class="alerts-overlay-right">
@@ -70,6 +71,9 @@
         </main>
     </div>
 
+    <!-- Helper i18n da caricare PRIMA dei componenti -->
+    <script src="/static/js/i18n.js"></script>
+    
     <!-- Librerie esterne -->    
     <script src="/static/js/components/status_server_card.js"></script>
     <script src="/static/js/components/alert_server_card.js"></script>

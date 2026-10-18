@@ -15,7 +15,7 @@ from library.logger import HealthPACSLogger
 from library.models import Base
 from library.repository.container import RepositoryContainer
 from library.api.socket import HealthPACSServiceClientSocket
-from library.constant_health_pacs import SERVICE_STATUS, SERVICE_STATUS_STATES, LOG_FILE_NAME_SERVICE, APPLICATION_NAME_SERVICE
+from library.constant_health_pacs import MSG_SERVICE_SOCKET_TYPE, SERVICE_STATUS_STATES, LOG_FILE_NAME_SERVICE, APPLICATION_NAME_SERVICE
 from library.workers.system_monitor_worker import start_system_monitor_worker
 
 # 1. Istanziazione isolata del logger per HealthPACSWeb
@@ -46,7 +46,7 @@ def create_fastapi_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -
 
     # Iniezione delle dipendenze nello stato dell'applicazione
     app.state.dbmanager = dbmanager
-    app.state.repos = repos
+    app.state.repo_container = repos
 
     # Registrazione dei router API e WebSocket
     app.include_router(studies_rest_router)
@@ -80,11 +80,11 @@ def start_dicom_server(dbmanager: DatabaseManager, repos: RepositoryContainer) -
         logger.error(f"Errore durante l'avvio del DICOM Server: {e}", exc_info=True)
         raise e
     
-def start_service_socket_client(dbmanager: DatabaseManager) -> HealthPACSServiceClientSocket:
+def start_service_socket_client(repo_container: None) -> HealthPACSServiceClientSocket:
     """Istanziamento ed avvio del client socket in un thread dedicato in background."""
     logger.info("Avvio Client Socket Notifiche verso HealthPACSWeb...")
     
-    client_socket = HealthPACSServiceClientSocket(db_manager=dbmanager)
+    client_socket = HealthPACSServiceClientSocket(repo_container)
 
     # Creazione ed avvio del thread sincrono dedicato
     socket_thread = threading.Thread(
@@ -127,7 +127,7 @@ def main():
         # 5. Avvio del Client Socket per la connessione verso
         #    "web_receiver_socket" necessaria all'invio delle
         #    notifiche recuperate da "start_system_monitor_worker"
-        service_socket = start_service_socket_client(dbmanager)
+        service_socket = start_service_socket_client(repos)
 
         # 6. Avvio del worker per il dispatching delle notifiche da DB.
         #    Recupera dalla tabella "app_notification_worker" le notifiche 
@@ -138,6 +138,7 @@ def main():
         start_system_monitor_worker(
             service_socket=service_socket,
             dbmanager=dbmanager,
+            repo_container=repos,
             shutdown_event=shutdown_event,
             interval=10
         )
@@ -170,9 +171,9 @@ def main():
         if service_socket:
             logger.info("Invio notifica di spegnimento a HealthPACSWeb...")
             service_socket.send_notification({
-                "type": SERVICE_STATUS,
+                "msg_type": MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_STATUS,
                 "sender": "HealthPACSService",
-                "status": ["OFFLINE"],
+                "status": SERVICE_STATUS_STATES.OFFLINE,
                 "message": "HealthPACSService è in fase di spegnimento controllato."
             })        
             

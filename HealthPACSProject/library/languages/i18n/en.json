@@ -1,0 +1,37 @@
+{
+    "KEY_LANG_APP_TITLE": "HealthPACS Web",
+
+    "KEY_LANG_LOGIN_TITLE": "HealthPACS Web - Login",
+    "KEY_LANG_LOGIN_HEADER": "PICTURE ARCHIVING AND COMMUNICATION SYSTEM (PACS) LOGIN",
+    "KEY_LANG_USERNAME_LABEL": "Username",
+    "KEY_LANG_PASSWORD_LABEL": "Password",
+    "KEY_LANG_LOGIN_BUTTON": "Sign In",
+    "KEY_LANG_ALERT_MISSING_TOKEN": "Authentication required. Please log in to proceed.",
+    "KEY_LANG_ALERT_SESSION_EXPIRED": "Session expired due to inactivity. Please log in again.",
+    "KEY_LANG_ALERT_BAD_CREDENTIALS": "Invalid credentials.",
+    "KEY_LANG_ALERT_UNAUTHORIZED": "User unauthorized to access the system.",
+
+    "KEY_LANG_STATUS_LABEL": "SERVER STATUS",
+    "KEY_LANG_STATUS_CONNECTED": "CONNECTED",
+    "KEY_LANG_STATUS_DISCONNECTED": "DISCONNECTED",
+
+    "KEY_LANG_SERVICE_ALIVE": "HealthPACSService is ALIVE",
+    "KEY_LANG_SERVICE_OFFLINE": "HealthPACSService is shutting down.",
+    "KEY_LANG_SERVICE_STATUS_CURRENT_MSG": "Current PACS service status",
+    "KEY_LANG_NO_DETAILS_PROVIDED": "No details provided",
+
+    "KEY_LANG_WELCOME_USER": "Welcome",
+    "KEY_LANG_LOGGED_USER": "Logged in user:",
+    "KEY_LANG_LOGOUT": "Logout",
+    "KEY_LANG_LOAD_STUDIES": "Load Studies",
+    "KEY_LANG_STUDIES_LOADED_SUCCESS": "Studies loaded successfully!",
+    "KEY_LANG_SEARCH_COMPLETED": "Search completed.",
+    "KEY_LANG_SERVER_CONNECTION_ERROR": "Server connection error.",
+
+    "KEY_LANG_LOGIN_CARD_HEADER": "Login",
+    "KEY_LANG_USERNAME_PLACEHOLDER": "Username (e.g. j.doe)",
+    "KEY_LANG_PASSWORD_PLACEHOLDER": "Password",
+    "KEY_LANG_SHOW_HIDE_PASSWORD": "Show/Hide Password",
+    "KEY_LANG_FORGOT_PASSWORD": "Forgot password?",
+    "KEY_LANG_ALERT_CONTACT_ADMIN": "Please contact the system administrator to reset your password."
+}

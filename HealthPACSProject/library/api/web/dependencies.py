@@ -2,15 +2,15 @@
 
 from typing import Dict, Any
 from fastapi import Request, HTTPException, status, Depends
+from library.repository.container import RepositoryContainer
 from library.services.auth_service import AuthService
 from library.constant_health_pacs import (
     NOTIFY_ERROR,
 )
 
-
 def get_auth_service(request: Request) -> AuthService:
     """Istanzia AuthService utilizzando il DatabaseManager presente nello stato dell'app."""
-    return AuthService(request.app.state.dbmanager)
+    return AuthService(request.app.state.repo_container)
 
 
 async def get_current_user_session(
@@ -35,7 +35,7 @@ async def get_current_user_session(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail= NOTIFY_ERROR["MISSING_TOKEN"]
+            detail= NOTIFY_ERROR.MISSING_TOKEN
         )
 
     # CASO 2: Token inviato ma sessione scaduta sul DB
@@ -43,7 +43,7 @@ async def get_current_user_session(
     if not session_info:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=NOTIFY_ERROR["SESSION_EXPIRED"]
+            detail=NOTIFY_ERROR.SESSION_EXPIRED
         )
 
     return session_info

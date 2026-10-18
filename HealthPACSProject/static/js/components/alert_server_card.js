@@ -46,9 +46,9 @@ const AlertServerCard = {
         });
 
         // Nomi dei canali dagli eventi di Severity
-        const criticalEvent = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.CRITICAL) ? NOTIFY_SEVERITY.CRITICAL : 'CRITICAL';
-        const warningEvent  = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.WARNING)  ? NOTIFY_SEVERITY.WARNING  : 'WARNING';
-        const infoEvent     = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.INFO)     ? NOTIFY_SEVERITY.INFO     : 'INFO';
+        const criticalEvent = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.CRITICAL) ? NOTIFY_SEVERITY.CRITICAL : NOTIFY_SEVERITY.CRITICAL;
+        const warningEvent  = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.WARNING)  ? NOTIFY_SEVERITY.WARNING  : NOTIFY_SEVERITY.WARNING;
+        const infoEvent     = (typeof NOTIFY_SEVERITY !== 'undefined' && NOTIFY_SEVERITY.INFO)     ? NOTIFY_SEVERITY.INFO     : NOTIFY_SEVERITY.INFO;
 
         // Ascolto diretto sui tre canali di severità
         this.socket.on(criticalEvent, (data) => this.renderAlert(data));
@@ -78,7 +78,7 @@ const AlertServerCard = {
             return;
         }
 
-        const severity = (data.severity || "INFO").toUpperCase();
+        const severity = (data.severity || NOTIFY_SEVERITY.INFO).toUpperCase();
         const cssClass = severity.toLowerCase();
         const containerId = this.containers[severity] || this.containers.INFO;
         const targetContainer = document.getElementById(containerId);

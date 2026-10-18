@@ -1,0 +1,37 @@
+{
+    "KEY_LANG_APP_TITLE": "HealthPACS Web",
+
+    "KEY_LANG_LOGIN_TITLE": "HealthPACS Web - Login",
+    "KEY_LANG_LOGIN_HEADER": "ACCESSO SISTEMA ARCHIVIAZIONE IMMAGINI (PACS)",
+    "KEY_LANG_USERNAME_LABEL": "Nome Utente",
+    "KEY_LANG_PASSWORD_LABEL": "Password",
+    "KEY_LANG_LOGIN_BUTTON": "Accedi",
+    "KEY_LANG_ALERT_MISSING_TOKEN": "Autenticazione richiesta. Effettuare il login per accedere.",
+    "KEY_LANG_ALERT_SESSION_EXPIRED": "Sessione scaduta per inattività. Effettuare nuovamente il login.",
+    "KEY_LANG_ALERT_BAD_CREDENTIALS": "Credenziali non valide.",
+    "KEY_LANG_ALERT_UNAUTHORIZED": "Utente non autorizzato ad accedere al sistema.",
+
+    "KEY_LANG_STATUS_LABEL": "STATO SERVER",
+    "KEY_LANG_STATUS_CONNECTED": "CONNESSO",
+    "KEY_LANG_STATUS_DISCONNECTED": "DISCONNESSO",
+
+    "KEY_LANG_SERVICE_ALIVE": "HealthPACSService è ATTIVO",
+    "KEY_LANG_SERVICE_OFFLINE": "HealthPACSService è in fase di spegnimento.",
+    "KEY_LANG_SERVICE_STATUS_CURRENT_MSG": "Stato corrente del servizio PACS",
+    "KEY_LANG_NO_DETAILS_PROVIDED": "Nessun dettaglio fornito",
+
+    "KEY_LANG_WELCOME_USER": "Benvenuto",
+    "KEY_LANG_LOGGED_USER": "Utente collegato:",
+    "KEY_LANG_LOGOUT": "Logout",
+    "KEY_LANG_LOAD_STUDIES": "Carica Studi",
+    "KEY_LANG_STUDIES_LOADED_SUCCESS": "Studi caricati con successo!",
+    "KEY_LANG_SEARCH_COMPLETED": "Ricerca completata.",
+    "KEY_LANG_SERVER_CONNECTION_ERROR": "Errore di connessione al server.",
+
+    "KEY_LANG_LOGIN_CARD_HEADER": "Login",
+    "KEY_LANG_USERNAME_PLACEHOLDER": "Nome Utente (es. r.rossi)",
+    "KEY_LANG_PASSWORD_PLACEHOLDER": "Password",
+    "KEY_LANG_SHOW_HIDE_PASSWORD": "Mostra/Nascondi Password",
+    "KEY_LANG_FORGOT_PASSWORD": "Password dimenticata?",
+    "KEY_LANG_ALERT_CONTACT_ADMIN": "Contattare l'amministratore di sistema per il reset password."
+}

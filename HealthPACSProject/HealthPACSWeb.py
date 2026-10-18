@@ -47,7 +47,7 @@ def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> Fa
 
     # Iniezione riferimenti DB e Repository nello stato dell'applicazione
     app.state.dbmanager = dbmanager
-    app.state.repos = repos
+    app.state.repo_container = repos
 
     # Inizializza il ricevitore Socket.IO della Web App
     init_socket_receiver(dbmanager)

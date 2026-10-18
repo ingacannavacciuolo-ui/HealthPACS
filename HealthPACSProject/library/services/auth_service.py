@@ -5,20 +5,18 @@ from typing import Optional, Dict, Any
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
 from library.logger import logger
-from library.repository import AppUsersRepo
-from library.repository import AppUsersSessionsRepo
-from library.repository import AppSystemSettingsRepo
-from library.constant_health_pacs import SESSION_DURATION_MINUTES, NOTIFY_ERROR
+
+from library.constant_health_pacs import SYSTEM_SETTING_KEY, NOTIFY_ERROR
 
 
 class AuthService:
     """Servizio per la gestione di Login, Logout e Validazione Sessione/Permessi."""
 
-    def __init__(self, db_manager):
-        self.db = db_manager
-        self.users_repo = AppUsersRepo(db_manager)
-        self.sessions_repo = AppUsersSessionsRepo(db_manager)
-        self.settings_repo = AppSystemSettingsRepo(db_manager)
+    def __init__(self, repo_container):
+        self.repo_container = repo_container
+        self.users_repo = repo_container.appusersrepo
+        self.sessions_repo = repo_container.appuserssessionsrepo
+        self.settings_repo = repo_container.appsystemsettingsrepo
         self.ph = PasswordHasher()
 
     def _get_session_duration_minutes(self) -> int:
@@ -28,13 +26,13 @@ class AuthService:
         """
         # Il valore della durata è recuperto da app_setting_system tramite la key SESSION_DURATION_MINUTES
         val_str = self.settings_repo.get_setting_value(
-            SESSION_DURATION_MINUTES, default_value="480"
+            SYSTEM_SETTING_KEY.SESSION_DURATION_MINUTES, default_value="480"
         )
         try:
             return int(val_str)
         except (ValueError, TypeError):
             logger.warning(
-                f"AuthService: Valore non valido per ({SESSION_DURATION_MINUTES}): ('{val_str}'). Uso fallback a 30m."
+                f"AuthService: Valore non valido per ({SYSTEM_SETTING_KEY.SESSION_DURATION_MINUTES}): ('{val_str}'). Uso fallback a 30m."
             )
             return 30
 
@@ -62,7 +60,6 @@ class AuthService:
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente non trovato: '{clean_username}'"
             )
-            return None, NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]
 
        
 
@@ -73,18 +70,18 @@ class AuthService:
             logger.warning(
                 f"AuthService: Password errata per l'utente: '{clean_username}'"
             )
-            return None, NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]
+            return None, NOTIFY_ERROR.LOGIN_BAD_CREDENTIALS
         except Exception as e:
             logger.error(
                 f"AuthService: Errore durante la verifica password per '{clean_username}': {e}"
             )
-            return None, NOTIFY_ERROR["LOGIN_BAD_CREDENTIALS"]
+            return None, NOTIFY_ERROR.LOGIN_BAD_CREDENTIALS
         
         if not user.get("is_active", False):
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente disabilitato: '{clean_username}'"
             )
-            return None, NOTIFY_ERROR["LOGIN_UNAUTHORIZED"]
+            return None, NOTIFY_ERROR.LOGIN_BAD_CREDENTIALS
 
         # 3. Determina la durata della sessione (da DB se non passata esplicitamente)
         if duration_minutes is None:
@@ -106,7 +103,7 @@ class AuthService:
             logger.error(
                 f"AuthService: Impossibile creare la sessione DB per utente '{clean_username}'"
             )
-            return None, "SESSION_CREATE_ERROR"
+            return None, NOTIFY_ERROR.SESSION_CREATE_ERROR
 
         # 5. Calcolo permessi effettivi (Ruolo + Eccezioni)
         permissions = self.users_repo.get_effective_permission_codes(user["id"])

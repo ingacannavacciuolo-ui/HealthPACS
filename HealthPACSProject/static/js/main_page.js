@@ -1,3 +1,4 @@
+
 // ==========================================================================
 // 1. MONKEY PATCH GLOBALE SU FETCH (Intercetta il 401 ovunque)
 // ==========================================================================
@@ -11,29 +12,29 @@ window.fetch = async function (...args) {
         const url = new URL(response.url);
         const reason = url.searchParams.get('reason');
 
-        let messaggio = "Sessione scaduta. Effettuare nuovamente il login.";
-        if (reason === "missing_token") {
-            messaggio = "Autenticazione mancante. Ritorno al login.";
-        } else if (reason === "session_expired") {
-            messaggio = "Sessione scaduta per inattività. Effettuare nuovamente il login.";
+        let messaggio = window.t(LANG_KEY.ALERT_SESSION_EXPIRED);
+        if (reason === NOTIFY_ERROR.MISSING_TOKEN) {
+            messaggio = window.t(LANG_KEY.ALERT_MISSING_TOKEN);
+        } else if (reason === NOTIFY_ERROR.SESSION_EXPIRED) {
+            messaggio = window.t(LANG_KEY.ALERT_SESSION_EXPIRED);
         }
 
         // Fai scattare subito il Toast e avvia il timer per il redirect
         forzaLogoutSessioneScaduta(messaggio);
         
         // Interrompiamo la catena restituendo una risposta vuota per bloccare eventuali elaborazioni JS successive
-        return new Response(JSON.stringify({ error: "session_expired" }), { status: 401 });
+        return new Response(JSON.stringify({ error: NOTIFY_ERROR.SESSION_EXPIRED }), { status: 401 });
     }
 
     // 2. Controllo standard in caso di risposta 401 JSON diretta
     if (response.status === 401 && !window.location.pathname.endsWith('/')) {
         const data = await response.clone().json().catch(() => ({}));
 
-        let messaggio = "Sessione scaduta. Effettuare nuovamente il login.";
-        if (data.detail === "missing_token") {
-            messaggio = "Autenticazione mancante. Ritorno al login.";
-        } else if (data.detail === "session_expired") {
-            messaggio = "Sessione scaduta per inattività. Effettuare nuovamente il login.";
+        let messaggio = window.t(LANG_KEY.ALERT_SESSION_EXPIRED);
+        if (data.detail === NOTIFY_ERROR.MISSING_TOKEN) {
+            messaggio = window.t(LANG_KEY.ALERT_MISSING_TOKEN);
+        } else if (data.detail === NOTIFY_ERROR.SESSION_EXPIRED) {
+            messaggio = window.t(LANG_KEY.ALERT_SESSION_EXPIRED);
         }
 
         forzaLogoutSessioneScaduta(messaggio);
@@ -61,13 +62,13 @@ async function apiFetch(url, options = {}) {
         // Chiama il fetch che ora è protetto dall'intercettore globale
         return await fetch(url, options);
     } catch (error) {
-        mostraToast("Errore di connessione al server.", "error");
+        mostraToast(window.t(LANG_KEY.SERVER_CONNECTION_ERROR), "error");
         throw error;
     }
 }
 
 // ==========================================================================
-// 1. FUNZIONE GLOBALE PER MOSTRARE NOTIFICHE TOAST
+// 3. FUNZIONE GLOBALE PER MOSTRARE NOTIFICHE TOAST
 // ==========================================================================
 function mostraToast(messaggio, tipo = 'success') {
     let container = document.getElementById('toast-container');
@@ -87,7 +88,7 @@ function mostraToast(messaggio, tipo = 'success') {
     // Aggiunge il toast al contenitore
     container.appendChild(toast);
 
-    // Rimuove automaticamente il toast dopo 4 secondi
+    // Rimuove automaticamente il toast dopo 5 secondi
     setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => {
@@ -97,10 +98,10 @@ function mostraToast(messaggio, tipo = 'success') {
 }
 
 // ==========================================================================
-// 2. FUNZIONE PER REDIRECT SU SESSIONE SCADUTA
+// 4. FUNZIONE PER REDIRECT SU SESSIONE SCADUTA
 // ==========================================================================
-function forzaLogoutSessioneScaduta(messaggio = "Sessione scaduta. Ritorno al login.") {
-    console.warn("[SESSION] Intercettata sessione scaduta:", messaggio);
+function forzaLogoutSessioneScaduta(messaggio = window.t(LANG_KEY.ALERT_SESSION_EXPIRED)) {
+    //console.warn("[SESSION] Intercettata sessione scaduta:", messaggio);
 
     // 1. Pulisce la sessione locale del browser
     sessionStorage.clear();
@@ -108,9 +109,8 @@ function forzaLogoutSessioneScaduta(messaggio = "Sessione scaduta. Ritorno al lo
     // 2. Mostra il Toast d'errore
     mostraToast(messaggio, "error");
 
-    // 3. Attende 2.5 secondi per mostrare l'animazione del Toast prima del redirect
+    // 3. Attende 2 secondi per mostrare l'animazione del Toast prima del redirect
     setTimeout(() => {
         window.location.href = "/logout";
     }, 2000);
 }
-

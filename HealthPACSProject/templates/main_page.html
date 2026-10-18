@@ -8,12 +8,18 @@
     <!-- FOGLIO DI STILE GLOBALE -->
      <link rel="stylesheet" href="/static/css/main_page.css">
     {% block extra_css %}{% endblock %}
+
+    <script>
+        window.TRANSLATIONS = Object.freeze(JSON.parse('{{ TRANSLATIONS | default({}) | tojson | safe }}'));
+        const LANG_KEY = Object.freeze(JSON.parse('{{ LANG_KEY | tojson | safe }}'));
+        const NOTIFY_ERROR = Object.freeze(JSON.parse('{{ NOTIFY_ERROR | tojson | safe }}'));
+    </script>
 </head>
 <body>
 
     <header>
         <h2>HealthPACS Application</h2>
-        <p>Utente collegato: <strong>{{ user.username if user and user.username else 'Utente' }}</strong></p>
+        <p>{{ _(LANG_KEY.LOGGED_USER) }} <strong>{{ user.username if user and user.username else 'Utente' }}</strong></p>
     </header>
 
     <hr>
@@ -27,11 +33,14 @@
     <hr>
 
     <footer>
-        <a href="/logout">Logout</a>
+        <a href="/logout">{{ _(LANG_KEY.LOGOUT) }}</a>
     </footer>
 
     <!-- TOAST CONTAINER IN FONDO ALLA PAGINA -->
     <div id="toast-container"></div>
+
+    <!-- Helper i18n da caricare PRIMA dei componenti -->
+    <script src="/static/js/i18n.js"></script>
 
     <!-- SCRIPT GLOBALE -->
      <script src="/static/js/main_page.js"></script>    

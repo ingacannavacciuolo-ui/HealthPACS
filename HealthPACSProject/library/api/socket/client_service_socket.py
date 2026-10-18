@@ -12,7 +12,7 @@ import socketio
 from library.logger import logger
 from library.repository import AppSystemSettingsRepo
 from library.constant_health_pacs import (
-    WEB_SOCKET_URL,
+    SYSTEM_SETTING_KEY,
     SOCKET_NAMESPACES,
     HEALT_PACS_WEB_URL_DEFAULT
 )
@@ -24,8 +24,8 @@ class HealthPACSServiceClientSocket:
     Gestisce la connessione automatica resiliente e l'invio non bloccante di notifiche verso HealthPACSWeb.
     """
 
-    def __init__(self, db_manager, max_buffer_size: int = 100):
-        self.dbmanager = db_manager
+    def __init__(self, repo_container: None, max_buffer_size: int = 100):
+        self.repo_container = repo_container        
         self.web_ws_url: Optional[str] = None
         self.namespace: Optional[str] = None
         self.is_running = False
@@ -62,24 +62,24 @@ class HealthPACSServiceClientSocket:
             logger.error(f"[SERVICE SOCKET] Errore connessione: {data}")
             self.is_connected_event.clear()
 
-    def load_config_from_db(self) -> bool:
-        if not self.dbmanager:
-            logger.error("[SERVICE SOCKET] Impossibile accedere al database: db_manager non disponibile.")
+    def load_config_from_container(self) -> bool:
+        if not self.repo_container:
+            logger.error("[SERVICE SOCKET] Impossibile accedere alle configurazioni: repo_container non disponibile.")
             return False
 
         try:
-            repo = AppSystemSettingsRepo(self.dbmanager)
-            url_from_db = repo.get_setting_value(WEB_SOCKET_URL, default_value=HEALT_PACS_WEB_URL_DEFAULT)
+            repo = self.repo_container.appsystemsettingsrepo
+            url_from_db = repo.get_setting_value(SYSTEM_SETTING_KEY.WEB_SOCKET_URL, default_value=HEALT_PACS_WEB_URL_DEFAULT)
             if url_from_db.startswith("ws://"):
                 url_from_db = url_from_db.replace("ws://", "http://")
             elif url_from_db.startswith("wss://"):
                 url_from_db = url_from_db.replace("wss://", "https://")
 
             self.web_ws_url = url_from_db
-            logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {WEB_SOCKET_URL} = '{self.web_ws_url}'")
+            logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {SYSTEM_SETTING_KEY.WEB_SOCKET_URL} = '{self.web_ws_url}'")
 
             # 2. Settaggio Namespace socket
-            self.namespace = SOCKET_NAMESPACES["WEB"]
+            self.namespace = SOCKET_NAMESPACES.WEB
             logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {SOCKET_NAMESPACES["WEB"]} = '{self.namespace}'")
 
             # REGISTRIAMO GLI EVENTI ORA CHE IL NAMESPACE È NOTO!
@@ -96,8 +96,8 @@ class HealthPACSServiceClientSocket:
             logger.warning("[SERVICE SOCKET] Client già avviato.")
             return
 
-        if not self.load_config_from_db():
-            logger.error("[SERVICE SOCKET] Impossibile avviare: configurazione DB fallita.")
+        if not self.load_config_from_container():
+            logger.error("[SERVICE SOCKET] Impossibile avviare: caricamento configurazione da container.")
             return
 
         if not self.web_ws_url:
@@ -148,8 +148,8 @@ class HealthPACSServiceClientSocket:
     #  GESTIONE NOTIFICHE VERSO HealthPACSWeb
     #--------------------------------------------------------------------------
     def send_notification(self, payload: Dict[str, Any]) -> bool:
-        if not isinstance(payload, dict) or "type" not in payload:
-            logger.error("[SERVICE SOCKET] Payload non valido: la chiave 'type' è obbligatoria.")
+        if not isinstance(payload, dict) or "msg_type" not in payload:
+            logger.error("[SERVICE SOCKET] Payload non valido: la chiave 'msg_type' è obbligatoria.")
             return False
 
         if self.sio.connected:
@@ -157,7 +157,7 @@ class HealthPACSServiceClientSocket:
         else:
             try:
                 self._message_queue.put_nowait(payload)
-                logger.debug(f"[SERVICE SOCKET] Offline: Notifica '{payload['type']}' salvata in coda.")
+                logger.debug(f"[SERVICE SOCKET] Offline: Notifica '{payload['msg_type']}' salvata in coda.")
                 return True
             except Exception:
                 logger.error("[SERVICE SOCKET] Coda offline piena! Notifica scartata.")

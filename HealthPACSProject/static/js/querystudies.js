@@ -21,8 +21,8 @@ async function caricaStudi() {
         const data = await response.json();
         console.log("Dati studi ricevuti:", data);
 
-        // Notifica di successo (utilizza la funzione mostraToast definita in main_page.js)
-        mostraToast("Studi caricati con successo!", "success");
+        // Notifica di successo tradotta dinamica
+        mostraToast(window.t(LANG_KEY.STUDIES_LOADED_SUCCESS), "success");
 
         // Qui inseriremo la logica per renderizzare i dati nella tabella HTML
     } catch (error) {
@@ -59,7 +59,7 @@ async function eseguiRicercaStudi(filtri) {
         if (!response) return;
 
         const risultati = await response.json();
-        mostraToast("Ricerca completata.", "success");
+        mostraToast(window.t(LANG_KEY.SEARCH_COMPLETED), "success");
         return risultati;
 
     } catch (error) {

@@ -37,47 +37,55 @@
     transition: color 0.3s ease;
 }
 
-/* Indicatore visivo (Pallino e Animazione Ping proporzionati alla card grande) */
+/* Indicatore visivo (Contenitore del Pallino e dell'Onda) */
+/* Indicatore visivo - Box contenitore fisso e rigido */
 .server-status-card .status-indicator {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 14px;
     height: 14px;
-    flex-shrink: 0; /* Impedisce che si deformi se il testo ridimensiona il contenitore */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
+/* Pallino pieno (Centrato al 100% nel box) */
 .server-status-card .status-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 14px;
     height: 14px;
     border-radius: 50%;
     background-color: #f50505; /* Rosso per disconnesso */
     box-shadow: 0 0 6px rgba(245, 5, 5, 0.8);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 2; /* Sta sopra al ring */
 }
 
+/* Ring dell'onda (Parte esattamente dagli stessi bordi del pallino) */
 .server-status-card .status-ping-ring {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    margin-top: -10px;  /* Centramento assoluto perfetto */
-    margin-left: -10px; /* Centramento assoluto perfetto */
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     border: 2px solid #f50505;
+    box-sizing: border-box; /* Indispensabile per far coincidere i bordi */
     opacity: 0;
     pointer-events: none;
+    z-index: 1; /* Sta sotto al pallino */
+    transform-origin: center center; /* Garantisce l'espansione sferica dal centro */
 }
 
-/* Stili per lo stato CONNESSO (Mantiene lo STESSO sfondo della card) */
+/* Stili per lo stato CONNESSO */
 .server-status-card.status-connected .status-value {
-    color: #22c55e;             /* Verde brillante ad alto contrasto su sfondo scuro */
+    color: #22c55e;
 }
 
 .server-status-card.status-connected .status-dot {
-    background-color: #22c55e; /* Verde brillante per il pallino */
+    background-color: #22c55e;
     box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
 }
 
@@ -87,13 +95,14 @@
     animation: status-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Animazione di espansione pura dal centro fisso */
 @keyframes status-ping {
     0% {
-        transform: scale(0.7);
+        transform: scale(1);
         opacity: 0.8;
     }
     80%, 100% {
-        transform: scale(1.8);
+        transform: scale(2.2);
         opacity: 0;
     }
 }

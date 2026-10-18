@@ -19,16 +19,15 @@ import time
 import logging
 import threading
 from typing import Any
-
+from library.constant_health_pacs import MSG_SERVICE_SOCKET_TYPE, SERVICE_STATUS_STATES, APPLICATION_NAME_SERVICE
 from library.repository.app_notification_worker_repo import AppNotificationWorkerRepo
-from library.constant_health_pacs import SERVICE_STATUS, SERVICE_STATUS_STATES, APPLICATION_NAME_SERVICE
-
 logger = logging.getLogger(__name__)
 
 
 def start_system_monitor_worker(
     service_socket: Any,
     dbmanager: Any,
+    repo_container: Any,
     shutdown_event: threading.Event,
     interval: int = 10,
     fast_interval: int = 5,
@@ -57,9 +56,9 @@ def start_system_monitor_worker(
             if is_connected:
                 # 1. EMISSIONE HEARTBEAT
                 service_socket.send_notification({
-                    "type": SERVICE_STATUS,
+                    "msg_type": MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_STATUS,
                     "sender": APPLICATION_NAME_SERVICE,
-                    "status": SERVICE_STATUS_STATES["ONLINE"],
+                    "status": SERVICE_STATUS_STATES.ONLINE,
                     "message": APPLICATION_NAME_SERVICE + " is ALIVE",
                     "timestamp": time.time()
                 })
@@ -75,8 +74,9 @@ def start_system_monitor_worker(
                             
                             sent_success = service_socket.send_notification({
                                 "sender": APPLICATION_NAME_SERVICE,
-                                "type": event.notify_type,
+                                "msg_type": MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_SEVERITY,                                
                                 "notify_key": event.notify_key,
+                                "notify_type": event.notify_type,
                                 "message": event.notify_description,
                                 "permanent": event.permanent,
                                 "severity": event.severity,
@@ -85,7 +85,7 @@ def start_system_monitor_worker(
                             })
 
                             if sent_success:
-                                repo.mark_as_sent(event.id)
+                                repo_container.appnotificationworkerrepo.mark_as_sent(event.id)
 
                 except Exception as e:
                     logger.error(f"[SYSTEM MONITOR] Errore durante il controllo notifiche DB: {e}", exc_info=True)

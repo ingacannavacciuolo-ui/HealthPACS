@@ -42,50 +42,52 @@ const ServerStatusCard = {
             // Recupera il valore 'ONLINE' dalla costante globale SERVICE_STATUS_STATES
             const onlineValue = (typeof SERVICE_STATUS_STATES !== 'undefined' && SERVICE_STATUS_STATES.ONLINE) 
                 ? SERVICE_STATUS_STATES.ONLINE 
-                : 'ONLINE';
+                : SERVICE_STATUS_STATES.ONLINE;
 
             // Confronta direttamente data.status con la costante del backend
             if (data && data.status === onlineValue) {
-                this.setConnected("CONNESSO");    // Attiva classe CSS verde + testo "CONNESSO"
+                this.setConnected(SERVICE_STATUS_STATES_VIEW.CONNECT);    // Attiva classe CSS verde + testo "CONNESSO"
             } else {
-                this.setDisconnected("DISCONNESSO"); // Attiva classe CSS rossa + testo "DISCONNESSO"
+                this.setDisconnected(SERVICE_STATUS_STATES_VIEW.DISCONNECT); // Attiva classe CSS rossa + testo "DISCONNESSO"
             }
         });
 
         // Evento fallback server_alive (se inviato dal backend)
         this.socket.on(SOCKET_EVENTS.SERVER_ALIVE, (data) => {
-            this.setConnected(data && data.status ? data.status : "CONNESSO");
+            this.setConnected(data && data.status ? data.status : SERVICE_STATUS_STATES_VIEW.CONNECT);
         });
 
         // Evento di disconnessione
         this.socket.on('disconnect', () => {
             console.warn('[ServerStatusCard] Disconnesso dal server.');
-            this.setDisconnected("DISCONNESSO");
+            this.setDisconnected(SERVICE_STATUS_STATES_VIEW.DISCONNECT);
         });
 
         // Errore di connessione
         this.socket.on('connect_error', (error) => {
             console.error('[ServerStatusCard] Errore di connessione:', error);
-            this.setDisconnected("DISCONNESSO");
+            this.setDisconnected(SERVICE_STATUS_STATES_VIEW.DISCONNECT);
         });
     },
 
-    setConnected(customText = "CONNESSO") {
+    setConnected(customText = SERVICE_STATUS_STATES_VIEW.CONNECT) {
         if (!this.cardEl || !this.textEl) return;
         
         this.connected = true;
         this.cardEl.classList.remove('status-disconnected');
-        this.cardEl.classList.add('status-connected');
-        this.textEl.textContent = customText;
+        this.cardEl.classList.add('status-connected');        
+        const statusText = window.t(LANG_KEY.STATUS_CONNECTED, customText);
+        this.textEl.textContent = statusText.toUpperCase();
     },
 
-    setDisconnected(customText = "DISCONNESSO") {
+    setDisconnected(customText = SERVICE_STATUS_STATES_VIEW.DISCONNECT) {
         if (!this.cardEl || !this.textEl) return;
 
         this.connected = false;
         this.cardEl.classList.remove('status-connected');
         this.cardEl.classList.add('status-disconnected');
-        this.textEl.textContent = customText;
+        const statusText = window.t(LANG_KEY.STATUS_DISCONNECTED, customText);
+        this.textEl.textContent = statusText.toUpperCase();
     },
 
     isOnline() {
