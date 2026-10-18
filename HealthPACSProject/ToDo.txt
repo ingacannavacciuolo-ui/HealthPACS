@@ -35,5 +35,7 @@
 9. Inserire lo stato della connessione del server. Verificare perché c'è un flick quando si attiva una nuova pagina di login - OK
 
 10. Definire le key ed i messaggi preimpostati per Alert e notifiche. OK
+
+11. Getsire le costanti e la lingua per tutti i messaggi utente. - in progress
     
 
