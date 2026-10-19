@@ -137,8 +137,7 @@ def main():
         #    del programma.
         start_system_monitor_worker(
             service_socket=service_socket,
-            dbmanager=dbmanager,
-            repo_container=repos,
+            dbmanager=dbmanager,            
             shutdown_event=shutdown_event,
             interval=10
         )

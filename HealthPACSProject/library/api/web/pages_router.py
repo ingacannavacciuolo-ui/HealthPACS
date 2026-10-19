@@ -55,7 +55,7 @@ async def login_page(request: Request,
         )
         return RedirectResponse(url=first_page_url, status_code=status.HTTP_302_FOUND)
 
-    context = {"title": "LOGIN_TITLE"}
+    context = {"title": LANG_KEY.LOGIN_TITLE}
 
    # Distinzione precisa tra Token Mancante e Sessione Scaduta
     if reason == NOTIFY_ERROR.MISSING_TOKEN:
@@ -96,7 +96,7 @@ async def do_login(
             request=request,
             name="login.html",
             context={
-                "title": "HealthPACS Web - Login",
+                "title": LANG_KEY.LOGIN_TITLE,
                 "bad_credential_alert": True,
                 "bad_credential_message": LANG_KEY.ALERT_BAD_CREDENTIALS
             },
@@ -109,7 +109,7 @@ async def do_login(
             request=request,
             name="login.html",
             context={
-                "title": "HealthPACS Web - Login",
+                "title": LANG_KEY.LOGIN_TITLE,
                 "unauthorized_alert": True,
                 "unauthorized_message": LANG_KEY.ALERT_UNAUTHORIZED
             },

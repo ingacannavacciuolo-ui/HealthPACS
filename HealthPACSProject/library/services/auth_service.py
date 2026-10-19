@@ -81,7 +81,7 @@ class AuthService:
             logger.warning(
                 f"AuthService: Tentativo di login fallito. Utente disabilitato: '{clean_username}'"
             )
-            return None, NOTIFY_ERROR.LOGIN_BAD_CREDENTIALS
+            return None, NOTIFY_ERROR.LOGIN_UNAUTHORIZED
 
         # 3. Determina la durata della sessione (da DB se non passata esplicitamente)
         if duration_minutes is None:

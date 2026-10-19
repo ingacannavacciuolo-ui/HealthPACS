@@ -80,7 +80,7 @@ class HealthPACSServiceClientSocket:
 
             # 2. Settaggio Namespace socket
             self.namespace = SOCKET_NAMESPACES.WEB
-            logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {SOCKET_NAMESPACES["WEB"]} = '{self.namespace}'")
+            logger.info(f"[SERVICE SOCKET] Impostazione caricata da DB: {SOCKET_NAMESPACES.WEB} = '{self.namespace}'")
 
             # REGISTRIAMO GLI EVENTI ORA CHE IL NAMESPACE È NOTO!
             self._setup_events()

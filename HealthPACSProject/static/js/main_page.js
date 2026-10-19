@@ -83,9 +83,13 @@ function mostraToast(messaggio, tipo = 'success') {
     // Crea l'elemento toast
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`;
-    toast.innerText = messaggio;
 
-    // Aggiunge il toast al contenitore
+    // Span dedicato al messaggio
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'toast-message';
+    msgSpan.innerText = messaggio;
+    toast.appendChild(msgSpan);
+
     container.appendChild(toast);
 
     // Rimuove automaticamente il toast dopo 5 secondi
@@ -94,8 +98,10 @@ function mostraToast(messaggio, tipo = 'success') {
         setTimeout(() => {
             toast.remove();
         }, 500);
-    }, 5000);
+    }, 4000);
 }
+
+
 
 // ==========================================================================
 // 4. FUNZIONE PER REDIRECT SU SESSIONE SCADUTA

@@ -36,6 +36,6 @@
 
 10. Definire le key ed i messaggi preimpostati per Alert e notifiche. OK
 
-11. Getsire le costanti e la lingua per tutti i messaggi utente. - in progress
+11. Gestire le costanti e la lingua per tutti i messaggi utente. - in progress
     
 

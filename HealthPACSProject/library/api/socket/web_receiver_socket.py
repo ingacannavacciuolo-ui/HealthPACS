@@ -1,6 +1,5 @@
 import time
 import socketio
-import logging
 from typing import Dict, Any
 from library.logger import logger
 from library.constant_health_pacs import (
@@ -8,8 +7,7 @@ from library.constant_health_pacs import (
     SERVICE_STATUS_STATES,
     SOCKET_NAMESPACES,
     SOCKET_EVENTS,
-    NOTIFY_KEY,
-    NOTIFY_TYPE,
+    NOTIFY_KEY,    
     NOTIFY_SEVERITY,
     LANG_KEY,
     APPLICATION_NAME_SERVICE
@@ -158,15 +156,7 @@ class HealthPACSWebReceiverSocket(socketio.AsyncNamespace):
         status_state.status = data.get("status", SERVICE_STATUS_STATES.OFFLINE)
 
         logger.info(f"[STATUS HANDLER] Service status: {status_state.status} | Msg: {data.get('message')}")
-        # EMIT verso il client Web (es. sul namespace LOGIN o SISTEMA)
-        await sio.emit(
-            SOCKET_EVENTS.SERVICE_STATUS_UPDATE, 
-            {
-                'status': status_state.status,
-                'message': data.get('message', '')
-            }, 
-            namespace=self.namespace  # oppure SISTEMA
-        )
+        # EMIT verso il client Web         
         await self.emit(SOCKET_EVENTS.SERVICE_STATUS_UPDATE, data)
 
 
