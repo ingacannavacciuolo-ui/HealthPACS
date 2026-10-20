@@ -6,7 +6,6 @@ import uvicorn
 from fastapi import FastAPI,Request, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-
 from library.dbmanager import DatabaseManager
 from library.logger import HealthPACSLogger
 from library.repository.container import RepositoryContainer

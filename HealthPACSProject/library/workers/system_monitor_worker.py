@@ -61,7 +61,9 @@ def _dispatcher_loop(
     dbmanager: Any,
     shutdown_event: threading.Event,
     dispatcher_interval: int,
-    retry_interval: int
+    retry_interval: int,
+    lang: str = "it",
+    fallback_lang: str = "en"
 ):
     """Loop dedicato al polling dal DB e invio notifiche pendenti."""
     logger.info(f"[DISPATCHER THREAD] Avviato (Intervallo: {dispatcher_interval}s / Retry: {retry_interval}s)")
@@ -75,13 +77,15 @@ def _dispatcher_loop(
 
                     for event in pending_events:
                         logger.info(f"[DISPATCHER THREAD] Invio notifica socket per evento: '{event.notify_key}'")
+                        # Estrazione del messaggio nella lingua configurata
+                        localized_msg = event.get_description(lang=lang, fallback_lang=fallback_lang)
                         
                         sent_success = service_socket.send_notification({
                             "sender": APPLICATION_NAME_SERVICE,
                             "msg_type": MSG_SERVICE_SOCKET_TYPE.MSG_SERVICE_SEVERITY,                                
                             "notify_key": event.notify_key,
                             "notify_type": event.notify_type,
-                            "message": event.notify_description,
+                            "message": localized_msg,
                             "permanent": event.permanent,
                             "severity": event.severity,
                             "is_active": True,
@@ -105,12 +109,14 @@ def _dispatcher_loop(
 
 
 def start_system_monitor_worker(
-    service_socket: Any,
+service_socket: Any,
     dbmanager: Any,    
     shutdown_event: threading.Event,
     heartbeat_interval: int = 15,
     dispatcher_interval: int = 5,
     retry_interval: int = 5,
+    lang: str = "it",
+    fallback_lang: str = "en",
     **kwargs
 ) -> Tuple[threading.Thread, threading.Thread]:
     """
@@ -137,7 +143,7 @@ def start_system_monitor_worker(
     # 2. Thread Dispatcher Notifiche
     dispatcher_thread = threading.Thread(
         target=_dispatcher_loop,
-        args=(service_socket, dbmanager, shutdown_event, disp_wait, fast_wait),
+        args=(service_socket, dbmanager, shutdown_event, disp_wait, fast_wait, lang, fallback_lang),
         name="NotificationDispatcherThread",
         daemon=True
     )

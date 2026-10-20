@@ -17,6 +17,7 @@ from library.repository.container import RepositoryContainer
 from library.api.socket import HealthPACSServiceClientSocket
 from library.constant_health_pacs import MSG_SERVICE_SOCKET_TYPE, SERVICE_STATUS_STATES, LOG_FILE_NAME_SERVICE, APPLICATION_NAME_SERVICE
 from library.workers.system_monitor_worker import start_system_monitor_worker
+from library.languages.i18n import DEFAULT_LANG
 
 # 1. Istanziazione isolata del logger per HealthPACSWeb
 service_logger_instance = HealthPACSLogger(
@@ -139,7 +140,9 @@ def main():
             service_socket=service_socket,
             dbmanager=dbmanager,            
             shutdown_event=shutdown_event,
-            interval=10
+            interval=10,
+            lang=DEFAULT_LANG,
+            fallback_lang="en"
         )
 
         # 7. Avvio del Server DICOM (SCP)

@@ -1,0 +1,6 @@
+#GENERARE alberodiprogetto.txt#
+********************************************************************************************************
+Get-ChildItem -Recurse -Exclude *.pyc | Where-Object { 
+    $_.FullName -notmatch '\\(\.venv|Include|Lib|Scripts|build|dist|specs|log|__pycache__)(\\|$)' 
+} | Select-Object FullName | Out-File -FilePath "alberodiprogetto.txt"
+********************************************************************************************************
