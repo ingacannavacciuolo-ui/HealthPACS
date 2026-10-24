@@ -1,28 +1,29 @@
 import signal
-import sys
 import threading
-import time
 from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI
-import asyncio
 # Import puliti tramite i package __init__.py organizzati precedentemente
-from library.api import studies_rest_router, studies_socket_router
-from library.dbmanager import DatabaseManager
-from library.dicom import DicomServer
-from library.logger import HealthPACSLogger
-from library.models import Base
-from library.repository.container import RepositoryContainer
-from library.api.socket import HealthPACSServiceClientSocket
-from library.constant_health_pacs import MSG_SERVICE_SOCKET_TYPE, SERVICE_STATUS_STATES, LOG_FILE_NAME_SERVICE, APPLICATION_NAME_SERVICE
-from library.workers.system_monitor_worker import start_system_monitor_worker
-from library.languages.i18n import DEFAULT_LANG
+from app.api import studies_rest_router, studies_socket_router
+from app.core.dbmanager import DatabaseManager
+from app.dicom import DicomServer
+from app.core.logger import SystemLogger
+from app.models import Base
+from app.repository.container import RepositoryContainer
+from app.api.socket import HealthPACSServiceClientSocket
+from app.core.constants import MSG_SERVICE_SOCKET_TYPE, SERVICE_STATUS_STATES, LOG_FILE_NAME_SERVICE, APPLICATION_NAME_SERVICE
+from app.workers.system_monitor_worker import start_system_monitor_worker
+from app.i18n import DEFAULT_LANG
+from app.core.types import HEALTH_PACS_CONFIG
+
 
 # 1. Istanziazione isolata del logger per HealthPACSWeb
-service_logger_instance = HealthPACSLogger(
+service_logger_instance = SystemLogger(
     app_name=APPLICATION_NAME_SERVICE, 
-    log_filename=LOG_FILE_NAME_SERVICE
+    log_filename=LOG_FILE_NAME_SERVICE,
+    enabled= HEALTH_PACS_CONFIG.get_system_log_enabled(),
+    log_level=HEALTH_PACS_CONFIG.get_system_log_level()
 )
 logger = service_logger_instance.get_logger()
 
@@ -143,10 +144,8 @@ def main():
             interval=10,
             lang=DEFAULT_LANG,
             fallback_lang="en"
-        )
-
-        # 7. Avvio del Server DICOM (SCP)
-        dicom_server = start_dicom_server(dbmanager, repos)        
+        )  
+     
 
         # 8. Avvio opzionale dell'API REST / WebSocket
         app = create_fastapi_app(dbmanager, repos)

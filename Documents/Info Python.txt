@@ -1,0 +1,34 @@
+1. Per bloccare (freezare) le dipendenze del progetto Python con le relative versioni esatte:
+
+	pip freeze > requirements.txt
+
+   Per evitare di includere dipendenze globali usa il flag --local per catturare solo i pacchetti installati nell'ambiente virtuale corrente:
+	
+	pip freeze --local > requirements.txt
+
+
+2. Per installare tutti i pacchetti e le dipendenze elencati nel file requirements.txt:
+
+	pip install -r requirements.txt
+
+
+3.Per aggiornare pip prima dell'installazione (consigliato per evitare errori di build):
+
+	python -m pip install --upgrade pip
+
+4. Verifica post-installazione:
+   Per confermare che tutti i pacchetti (come FastAPI, SQLAlchemy, ecc.) siano stati installati correttamente nell'ambiente:
+
+	pip list
+
+5. Per verificare la versione di Python utilizzata all'interno del tuo ambiente virtuale (venv), esegui questo comando nel terminale con il venv attivo:
+
+	python --version
+
+
+6. Cancellare la cartella __pycache__ contiene solo i file bytecode compilati da Python
+
+	Get-ChildItem -Path . -Filter "__pycache__" -Recurse -Directory | Remove-Item -Recurse -Force
+
+7. Estrazione struttura del progetto:
+	$rootName = (Get-Item .).Name; $items = Get-ChildItem -Recurse | Where-Object { $_.FullName -notmatch '\\(\.venv|\.git|__pycache__)(\\|$)' } | Select-Object -ExpandProperty FullName; @($rootName) + $items | Out-File -FilePath "alberodiprogetto.txt" -Encoding utf8

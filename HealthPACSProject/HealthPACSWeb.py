@@ -6,18 +6,22 @@ import uvicorn
 from fastapi import FastAPI,Request, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from library.dbmanager import DatabaseManager
-from library.logger import HealthPACSLogger
-from library.repository.container import RepositoryContainer
-from library.api import pages_router, sio_app, init_socket_receiver
-from library.constant_health_pacs import LOG_FILE_NAME_WEB, APPLICATION_NAME_WEB
+from app.core.dbmanager import DatabaseManager
+from app.core.logger import SystemLogger
+from app.repository import RepositoryContainer
+from app.api import pages_router, sio_app, init_socket_receiver
+from app.core.constants import LOG_FILE_NAME_WEB, APPLICATION_NAME_WEB
+from app.core.types import HEALTH_PACS_CONFIG
+from app.i18n import DEFAULT_LANG
 
 
 
 # 1. Istanziazione isolata del logger per HealthPACSWeb
-web_logger_instance = HealthPACSLogger(
+web_logger_instance = SystemLogger(
     app_name=APPLICATION_NAME_WEB, 
-    log_filename=LOG_FILE_NAME_WEB
+    log_filename=LOG_FILE_NAME_WEB,
+    enabled= HEALTH_PACS_CONFIG.get_system_log_enabled(),
+    log_level=HEALTH_PACS_CONFIG.get_system_log_level()
 )
 logger = web_logger_instance.get_logger()
 
@@ -49,7 +53,9 @@ def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> Fa
     app.state.repo_container = repos
 
     # Inizializza il ricevitore Socket.IO della Web App
-    init_socket_receiver(dbmanager)
+    init_socket_receiver(dbmanager,
+                         lang=DEFAULT_LANG,
+                         fallback_lang="en")
 
     # 1. Configurazione della cartella STATIC per CSS, JS e risorse grafiche
     base_path = (
@@ -57,7 +63,7 @@ def create_web_app(dbmanager: DatabaseManager, repos: RepositoryContainer) -> Fa
         if getattr(sys, "frozen", False)
         else os.path.dirname(os.path.abspath(__file__))
     )
-    static_dir = os.path.join(base_path, "static")
+    static_dir = os.path.join(base_path, "app", "webapp", "static")
 
     if os.path.exists(static_dir):
         app.mount("/static", StaticFiles(directory=static_dir), name="static")

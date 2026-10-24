@@ -1,0 +1,97 @@
+HealthPACSProject/
+├── .vscode/
+│   ├── launch.json
+│   └── settings.json
+├── app/                           # (ex "library") Codice sorgente principale
+│   ├── __init__.py
+│   ├── core/                      # Configurazione globale, DB, Logger, Costanti
+│   │   ├── __init__.py
+│   │   ├── config.py              # Gestione configurazioni (es. healthpacsconfig.ini / .env)
+│   │   ├── database.py            # (ex dbmanager.py) Gestione sessione e connessione DB
+│   │   ├── logger.py              # Log centralizzato
+│   │   ├── constants.py           # (ex constant_health_pacs.py)
+│   │   ├── types.py               # (ex type_health_pacs.py)
+│   │   └── utils.py               # (ex utility_health_pacs.py)
+│   │
+│   ├── api/                       # Router ed Endpoints
+│   │   ├── __init__.py
+│   │   ├── rest/                  # API REST (JSON)
+│   │   │   ├── __init__.py
+│   │   │   └── dicom_studies_rest.py
+│   │   ├── socket/                # WebSockets / Network Sockets
+│   │   │   ├── __init__.py
+│   │   │   ├── client_service_socket.py
+│   │   │   ├── dicom_studies_socket.py
+│   │   │   └── web_receiver_socket.py
+│   │   └── web/                   # Router per Pagine HTML (Jinja2)
+│   │       ├── __init__.py
+│   │       ├── dependencies.py
+│   │       ├── pages_router.py
+│   │       └── template_globals.py
+│   │
+│   ├── dicom/                     # Modulo specifico per protocolli DICOM
+│   │   ├── __init__.py
+│   │   ├── dicom_scp.py
+│   │   ├── dicom_server.py
+│   │   └── dicom_utility.py
+│   │
+│   ├── models/                    # Modelli ORM / Pydantic Schemas
+│   │   ├── __init__.py
+│   │   ├── base_model.py
+│   │   ├── app_users_model.py
+│   │   ├── dicom_studies_model.py
+│   │   └── ... (altri modelli)
+│   │
+│   ├── repositories/              # Layer Accesso Dati (Pattern Repository)
+│   │   ├── __init__.py
+│   │   ├── container.py           # Iniezione di dipendenze dei repository
+│   │   ├── app_users_repo.py
+│   │   ├── dicom_studies_repo.py
+│   │   └── ... (altri repository)
+│   │
+│   ├── services/                  # Business Logic
+│   │   ├── __init__.py
+│   │   ├── auth_service.py
+│   │   └── dicom_studies_service.py
+│   │
+│   ├── security/                  # Autenticazione, Hash Password, JWT
+│   │   ├── __init__.py
+│   │   └── password.py
+│   │
+│   ├── workers/                   # Task in background e processori async
+│   │   ├── __init__.py
+│   │   └── system_monitor_worker.py
+│   │
+│   ├── i18n/                      # (ex "languages") Localizzazione e traduzioni
+│   │   ├── __init__.py
+│   │   ├── en.json
+│   │   └── it.json
+│   │
+│   └── webapp/                    # Risorse Frontend (Static + Templates)
+│       ├── static/
+│       │   ├── css/
+│       │   ├── js/
+│       │   └── img/
+│       └── templates/
+│           ├── components/
+│           ├── login.html
+│           └── main_page.html
+│
+├── scripts/                       # Script di utilità e avvio debug (ex "compiling")
+│   ├── HealthPACSService_debug.bat
+│   └── HealthPACSWeb_debug.bat
+│
+├── tests/                         # Test Unitari e di Integrazione (ex "tester")
+│   ├── __init__.py
+│   ├── test_api_server.py
+│   ├── test_auth.py
+│   └── utils/                     # Script per generazione dati di test
+│       ├── createpassword.py
+│       └── create_test_user.py
+│
+├── .env.example                   # Esempio di variabili d'ambiente
+├── healthpacsconfig.ini           # Configurazione principale
+├── HealthPACSService.py           # Entry point per il Servizio DICOM/Background
+├── HealthPACSWeb.py               # Entry point per l'Applicazione Web/API
+├── requirements.txt               # Dipendenze del progetto
+└── README.md                      # Documentazione del Boilerplate

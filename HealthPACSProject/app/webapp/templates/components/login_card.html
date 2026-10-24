@@ -1,0 +1,62 @@
+<!-- Componente Card di Autenticazione -->
+<div class="login-card-container">
+    <div class="login-card">
+        <div class="card-header">
+            <div class="card-icon">
+               <img src="/static/img/icons8-utente-40.png" alt="Icona Autenticazione" class="user-image-icon">
+            </div>
+            <h2>{{ _(LANG_KEY.LOGIN_CARD_HEADER) }}</h2>
+        </div>
+
+        {% if bad_credential_alert %}
+        <div class="login-error-alert" id="loginErrorAlert">
+            {{ _(bad_credential_message) }}
+        </div>        
+        {% elif unauthorized_alert%}
+            <div class="login-warning-alert" id="loginWarningAlert">
+                {{ _(unauthorized_message) }}
+            </div>
+        {% endif %}
+
+        <form action="/login" method="POST" id="loginForm">
+            <div class="form-group">
+                <div class="input-icon-wrapper">
+                    <span class="input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                    <input type="text" id="username" name="username" placeholder="{{ _(LANG_KEY.USERNAME_PLACEHOLDER) }}" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-icon-wrapper">
+                    <span class="input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </span>
+                    <input type="password" id="password" name="password" placeholder="{{ _(LANG_KEY.PASSWORD_PLACEHOLDER) }}" required autocomplete="current-password">
+                    <button type="button" class="toggle-password" id="togglePasswordBtn" title="{{ _(LANG_KEY.SHOW_HIDE_PASSWORD) }}">
+                        <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnSubmit">
+                {{ _(LANG_KEY.LOGIN_BUTTON) | upper }}
+            </button>
+        </form>
+
+        <div class="card-footer-links">
+            {% set alert_msg = _(LANG_KEY.ALERT_CONTACT_ADMIN) %}
+            <a href="#" class="card-link" id="forgotPasswordLink" data-alert="{{ alert_msg }}">{{ _(LANG_KEY.FORGOT_PASSWORD) }}</a>
+        </div>
+    </div>
+</div>
